@@ -1,0 +1,1403 @@
+\pdfminorversion=4
+\documentclass{beamer}
+%[handout]
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+%\usepackage{avant}
+
+\useoutertheme[footline=authorinstitutetitle]{miniframes}
+\usetheme{Berlin}
+%\usecolortheme[RGB={52,147,54}]{structure}
+\usecolortheme{seagull}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{blocks}[rounded]
+
+\setbeamercolor{footlinecolor}{fg=black,bg=white}
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[sep=0.5em,wd=\paperwidth]{footlinecolor}
+  \begin{columns}
+    \column{9cm}
+      \tiny{\insertshortauthor}
+      \vspace{0.05cm}
+      \hrule
+      \vspace{0.08cm}
+      \tiny{\insertshorttitle}
+    \column{2cm}\hfill\includegraphics[width=1cm]{template_images/rg_logo_black_gray.png}
+  \end{columns}
+  \end{beamercolorbox}%
+}
+
+
+\title{Clojure Introduction}
+\subtitle{An Introduction to the Clojure Programming Language}
+\author[Rüdiger Gad -- \url{http://ruedigergad.com}]{Rüdiger Gad}
+\institute[]{
+  \includegraphics[height=1.5cm]{template_images/rg_logo_black_gray.png}\\
+  \url{http://ruedigergad.com}\\
+\vspace{0.8cm}
+\includegraphics[width=1cm]{template_images/cc_bysa.png}\\
+This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License.}
+\date{}
+%\date{2012-07-21}
+
+\usepackage{pgf}  
+
+
+\begin{document}
+
+	\begin{frame}[plain]
+		\titlepage
+	\end{frame}
+
+	\begin{frame}
+   	\frametitle{Outline}
+		\tableofcontents
+	\end{frame}
+
+  \AtBeginSection[]
+  {
+   \begin{frame}
+       \frametitle{Outline}
+%       \tableofcontents[currentsection,subsectionsa]
+       \tableofcontents[sectionstyle=show/hide,subsectionstyle=hide/show/hide]
+   \end{frame}
+  }
+
+
+
+  \section{General}
+  \subsection{}
+
+  \begin{frame}
+    \frametitle{What is it?}
+
+    \begin{itemize}
+      \item Functional Programming Language
+      \item Hosted on the JVM
+      \item Lisp-dialect
+      \item Dynamically Typed
+    \end{itemize}
+  \end{frame} 
+
+  \begin{frame}
+      \frametitle{Why use it?}
+
+      \begin{itemize}
+          \item Powerful
+          \item Concise Code
+          \item Rapid Development
+          \item Easy Prototyping and Experimenting
+          \item Concurrency Features
+          \item Java Interoperability $\rightarrow$ Re-use Existing Libs/Code
+          \item JVM $\rightarrow$ ``Platform Independent''
+          \item \ldots
+      \end{itemize}
+  \end{frame}
+  
+  \begin{frame}
+      \frametitle{Don't be afraid. ;)}
+
+      \begin{itemize}
+          \item Lot's of Brackets
+          \item Entirely different Programming Paradigm
+          \item Might be confusing at first.
+%          \item Steep Learning Curve?
+          \item Many Cool Features
+          \item It's worth the effort!
+      \end{itemize}
+  \end{frame}
+  
+  \begin{frame}
+    \frametitle{``Installation''}
+    \begin{itemize}
+      \item clojure.org
+      \item Packet Manager
+      \item Download
+%      \item USB Stick
+      \item Suggested: rlwrap or jline
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{IDE Integration}
+    \begin{itemize}
+      \item Eclipse: Counterclockwise
+          \begin{itemize}
+              \item Update Site: \url{http://ccw.cgrand.net/updatesite/}
+          \end{itemize}
+      \item Vim: \url{http://dev.clojure.org/display/doc/Getting+Started+with+Vim}
+      \item Emacs: \url{http://dev.clojure.org/display/doc/Getting+Started+with+Emacs}
+      \item JEdit: \url{http://dev.clojure.org/display/doc/Getting+Started+with+JEdit}
+      \item \ldots
+    \end{itemize}
+  \end{frame}
+  
+
+  \section{Introduction}
+  \subsection{Basics}
+
+  \begin{frame}
+    \frametitle{Prepare Yourself}
+
+    \begin{itemize}
+      \item ``You must unlearn what you have learned.'', Yoda
+      \item Try not to think in other languages.
+      \item It is simple.
+      \item Very Few Rules
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+      \frametitle{You will learn about:}
+
+      \begin{itemize}
+          \item Read Eval Print Loop (REPL)
+          \item Lisp
+          \item Prefix Notation
+          \item Functional Programming
+          \item 1st Class Functions
+          \item Higher-order Functions
+          \item Data Structures
+          \item Homoiconic
+          \item Hands-on Knowledge
+      \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+      \frametitle{Other Cool Stuff (not covered here)}
+
+      \begin{itemize}
+          \item Macros
+          \item Variable Capture
+          \item Un-/Quoting
+          \item Laziness
+          \item Namespaces
+          \item Software Transactional Memory
+          \item Bindings
+          \item Java Interoperability
+          \item \ldots
+      \end{itemize}
+  \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL}
+
+\begin{itemize}
+\item Read Eval Print Loop
+\item Interactive Prompt
+\item Test and Experiment
+\item Very Powerful
+\end{itemize}
+\begin{lstlisting}[basicstyle=\scriptsize]
+[rc@colin ~]$ clojure
+Clojure 1.4.0
+user=>
+\end{lstlisting}
+\end{frame}
+
+  \begin{frame}
+      \frametitle{Clojure is a Lisp.}
+
+      \begin{itemize}
+          \item List Processing
+          \item Syntax: (\ldots)
+          \item Special Rule:
+              \begin{itemize}
+                  \item First Element: ``Executable''
+                  \item Rest: ``Arguments''
+              \end{itemize}
+          \item Example: (println ''Hello World'')
+      \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+      \frametitle{Basics}
+
+      \begin{itemize}
+          \item Prefix Notation
+              \begin{itemize}
+                  \item (+ 1 2)
+                  \item (* 3 4)
+              \end{itemize}
+          \item Counterexample
+              \begin{itemize}
+                  \item Infix Notation
+                  \item 1 + 2
+                  \item 3 * 4
+                  \item Languages: Python, C, \ldots
+              \end{itemize}
+      \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+      \frametitle{Basics (continued)}
+
+      \begin{itemize}
+          \item nil
+              \begin{itemize}
+                  \item ``NULL'', null, \ldots
+                  \item Simply: nothing
+              \end{itemize}
+          \item Comments
+              \begin{itemize}
+                  \item ``;''
+                  \item ; This is a comment.
+              \end{itemize}
+      \end{itemize}
+  \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: Basic Examples}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> ; Comments are started with ";".
+user=> (+ 1 2) 
+3
+user=> (+ 1 2 3 4) 
+10
+user=> (println "Hello!") ; Prints to stdout and returns nil.
+Hello!
+nil
+user=>
+\end{lstlisting}
+\end{frame}
+
+\subsection{Data Types}
+  \begin{frame}
+      \frametitle{Simple Data Types}
+
+      \begin{itemize}
+          \item Boolean: true, false
+          \item Numerical: 1, 2.3, \ldots
+              \begin{itemize}
+                  \item Arbitrary Size
+              \end{itemize}
+          \item Characters: $\backslash$X
+          \item Strings: ``My String''
+          \item Standard Java Classes
+          \item Special
+              \begin{itemize}
+                  \item Ratio: 1/3
+              \end{itemize}
+      \end{itemize}
+  \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: Basic Data Types}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> true
+true
+user=> 1
+1
+user=> 2.3
+2.3
+user=> 123456789012345678901234567890
+123456789012345678901234567890N
+user=> \X
+\X
+user=> "My String"
+"My String"
+user=> 1/3
+1/3
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: Basic Data Types (continued)}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> (type true)
+java.lang.Boolean
+user=> (type 1)
+java.lang.Long
+user=> (type 2.3)
+java.lang.Double
+user=> (type 123456789012345678901234567890)
+clojure.lang.BigInt
+user=> (type \X)
+java.lang.Character
+user=> (type "My String")
+java.lang.String
+user=> (type 1/3)
+clojure.lang.Ratio
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Keywords}
+
+\begin{itemize}
+\item :my-keyword
+\item Always evaluate to themselves.
+\end{itemize}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> :my-keyword
+:my-keyword
+user=> (type :my-keyword)
+clojure.lang.Keyword
+\end{lstlisting}
+\end{frame}
+
+  \begin{frame}
+      \frametitle{``Complex'' Data Types}
+
+      \begin{itemize}
+          \item Lists: (\ldots)
+          \item Vectors: [\ldots]
+          \item Sets: \#\{\ldots\}
+          \item Maps: \{\ldots\}
+          \item Note!
+              \begin{itemize}
+                  \item Lists are special.
+                  \item '(\ldots)
+              \end{itemize}
+      \end{itemize}
+  \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: ``Complexer'' Data Types}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> '(1 2 3)
+(1 2 3)
+user=> (type '(1 2 3))
+clojure.lang.PersistentList
+user=> ["a" "b" "c"]
+["a" "b" "c"]
+user=> (type ["a" "b" "c"])
+clojure.lang.PersistentVector
+user=> #{1 2 3}
+#{1 2 3}
+user=> (type #{1 2 3})
+clojure.lang.PersistentHashSet
+user=> {"a" 1 "b" 2}
+{"a" 1, "b" 2}
+user=> (type {"a" 1 "b" 2})
+clojure.lang.PersistentArrayMap
+\end{lstlisting}
+\end{frame}
+
+  \begin{frame}
+      \frametitle{Get Help}
+
+      \begin{itemize}
+          \item REPL
+              \begin{itemize}
+                  \item (doc println)
+                  \item (find-doc ''foo'')
+              \end{itemize}
+          \item Cheat Sheet: \url{http://clojure.org/cheatsheet}
+          \item API Docs: \url{http://clojure.github.com/clojure/api-index.html}
+          \item Books: Clojure in Action, The Joy of Clojure
+          \item \url{https://github.com/ruedigergad/clojure-by-example}
+      \end{itemize}
+  \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: Getting Help}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> (doc println)
+-------------------------
+clojure.core/println
+([& more])
+  Same as print followed by (newline)
+nil
+user=> (doc print)
+-------------------------
+clojure.core/print
+([& more])
+  Prints the object(s) to the output stream that is the current value
+  of *out*.  print and println produce output for human consumption.
+nil
+user=> 
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: Getting Help (continued)}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> (find-doc "produce output")
+-------------------------
+clojure.core/print
+([& more])
+  Prints the object(s) to the output stream that is the current value
+  of *out*.  print and println produce output for human consumption.
+nil
+\end{lstlisting}
+\end{frame}
+
+  \begin{frame}
+      \frametitle{Wrap-up}
+
+      \begin{itemize}
+          \item Data Types
+              \begin{itemize}
+                  \item Simple
+                  \item Complex
+              \end{itemize}
+          \item Get Help
+          \item Prefix Notation
+          \item Very Few Rules
+          \item One Important Rule:
+              \begin{itemize}
+                  \item Lists are special.
+              \end{itemize}
+      \end{itemize}
+  \end{frame}
+
+
+  \section{Doing Things}
+  \subsection{Functions Introduced}
+
+  \begin{frame}
+      \frametitle{We will look into \ldots}
+
+      \begin{itemize}
+          \item Some Built-in Functions
+          \item Storing Things
+          \item Define own functions.
+          \item 1st Class Functions
+          \item Higher-order Functions
+          \item Homoiconic
+          \item Lexical Scope
+      \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+      \frametitle{Built-in Functions}
+
+      \begin{itemize}
+          \item Mathematical: +, -, *, /, \ldots
+          \item Modify Data Structures
+          \item Data Structures and Keywords as Functions
+          \item Experiment on your own.
+          \item Use ``(type \ldots)'' for your experiments.
+      \end{itemize}
+  \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: Some Mathematical Functions}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> (+ 1 2)
+3
+user=> (+ 1 2 3 4 5)
+15
+user=> (/ 10 2)
+5
+user=> (/ 1 4)
+1/4
+user=> (* (/ 1 4) 2)
+1/2
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: Functions on Data Structures}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> (first [1 2 3])
+1
+user=> (last [1 2 3])
+3
+user=> (nth [1 2 3] 1)
+2
+user=> (nth '(1 2 3) 1)
+2
+user=> (conj [1 2] 3)
+[1 2 3]
+user=> (conj '(1 2) 3)
+(3 1 2)
+user=> (conj #{"a" "b"} "c")
+#{"a" "b" "c"}
+user=> (get {"a" 1 "b" 2} "a")
+1
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: Data Structures and Keywords as Functions}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> ([1 2 3] 1)
+2
+user=> (:a {:a "a" :b "b"})
+"a"
+user=> ({:a "a" :b "b"} :a)
+"a"
+user=> ({"a" 1 "b" 2} "a")
+1
+user=> (#{"a" "b" "c"} "x")
+nil
+user=> (#{"a" "b" "c"} "b")
+"b"
+\end{lstlisting}
+\end{frame}
+
+
+  \begin{frame}
+      \frametitle{``Store'' Things}
+
+      \begin{itemize}
+          \item Symbols
+              \begin{itemize}
+                  \item Used to reference things.
+                  \item Begin with non-numerical characters.
+              \end{itemize}
+          \item Vars
+              \begin{itemize}
+                  \item Name: Symbol
+                  \item ``Binding'' to ``Something''
+                  \item Evaluate to the bound ``something''.
+              \end{itemize}
+          \item Example: (def my-var 1234)
+      \end{itemize}
+  \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: Vars}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> my-var
+CompilerException java.lang.RuntimeException: Unable to resolve symbol: my-var in this context, compiling:(NO_SOURCE_PATH:0) 
+user=> (def my-var 1234)
+#'user/my-var
+user=> my-var
+1234
+user=> (type my-var)
+java.lang.Long
+user=> (def another-var "foo")
+#'user/another-var
+user=> another-var
+"foo"
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: Vars (continued)}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> (def my-var "string")
+#'user/my-var
+user=> my-var
+"string"
+user=> (def my-var another-var)
+#'user/my-var
+user=> my-var
+"foo"
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Functions}
+
+\begin{itemize}
+\item Created with the \texttt{fn} Special Form.
+\item Syntax: (fn [args] body)
+\item Example: (fn [] (println ``Hello Function''))
+\item Note: \texttt{args} is a Vector
+\item Remember: Clojure is homoiconic.
+\end{itemize}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> (fn [] (println "Hello Function"))
+#<user$eval160$fn__161 user$eval160$fn__161@6c0089ab>
+\end{lstlisting}
+\end{frame}
+
+  \begin{frame}
+      \frametitle{Functions (continued)}
+
+      \begin{itemize}
+          \item What to do with that?
+          \item How to give it a name?
+          \item How to ``call'' functions?
+          \item Solution $\rightarrow$ ``Store'' in a Var
+          \item (def my-function (fn [] (println ``Hello Function'')))
+          \item ``Call'': (my-function)
+          \item Recall: Lists are special.
+      \end{itemize}
+  \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: Basic Function}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> (def my-function (fn [] (println "Hello Function")))
+#'user/my-function
+user=> (my-function)
+Hello Function
+nil
+\end{lstlisting}
+\end{frame}
+
+  \begin{frame}
+      \frametitle{Functions Shortcut}
+
+      \begin{itemize}
+          \item (def foo (fn [] \ldots)) all the time?
+          \item Something ``more Clever''?
+          \item Shortcut $\rightarrow$ (defn foo [] \ldots)
+          \item Keep in mind: A function is ``stored'' in a var.
+          \item Sidenote: defn is a macro.
+          \item Clojure has lots of clever ``shortcuts''.
+          \item Custom ``Shortcuts'' Possible %{\footnotesize More later}
+      \end{itemize}
+  \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: Basic Function}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> (defn my-function [] (println "Hello Function"))
+#'user/my-function
+user=> (my-function)
+Hello Function
+nil
+\end{lstlisting}
+\end{frame}
+
+  \begin{frame}
+      \frametitle{Functions, 1st-class}
+
+      \begin{itemize}
+          \item Functions: 1st-class Members 
+          \item Q: 1st-class?
+          \item A: Like any other Member\\$\rightarrow$
+              \begin{itemize}
+                  \item Storable
+                  \item Returnable
+                  \item Pass as Argument
+              \end{itemize}
+          \item Powerful Feature
+      \end{itemize}
+  \end{frame}
+
+
+\subsection{More on Functions}
+
+  \begin{frame}
+      \frametitle{Anonymous Functions}
+
+      \begin{itemize}
+          \item (fn [] body)
+          \item Anonymous $\rightarrow$ no Name
+          \item ``Call'' this?
+          \item Recall: Lists are special.
+          \item $\rightarrow$ ((fn [] body))
+          \item Shortcut: \#(body)
+          \item Strange?
+          \item Powerful!
+      \end{itemize}
+  \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: Anonymous Function}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> (fn [] (println "My fn"))
+#<user$eval9$fn__10 user$eval9$fn__10@1776323e>
+user=> ((fn [] (println "My fn")))
+My fn
+nil
+user=> #(println "My 2nd fn")
+#<user$eval17$fn__18 user$eval17$fn__18@2430c6ca>
+user=> (#(println "My 2nd fn"))
+My 2nd fn
+nil
+user=>  
+\end{lstlisting}
+\end{frame}
+
+  \begin{frame}
+      \frametitle{Passing Arguments}
+
+      \begin{itemize}
+          \item (fn [\textbf{arguments}] body)
+          \item Arguments: Vector []
+          \item Example: (defn hello [name] (println ``Hello'' name ``!''))
+          \item Usage: (hello ``Bob'')
+      \end{itemize}
+  \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: Passing Arguments}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> (defn hello [name] (println "Hello" name "!"))
+#'user/hello
+user=> (hello "Bob")
+Hello Bob !
+nil
+user=>  
+\end{lstlisting}
+\end{frame}
+
+  \begin{frame}
+      \frametitle{Multi-arity Functions}
+
+      \begin{itemize}
+          \item Arity $\rightarrow$ \# of Arguments
+          \item Example
+              \begin{itemize}
+                  \item (+ 1)
+                  \item (+ 1 2)
+                  \item (+ 1 2 3)
+              \end{itemize}
+          \item Syntax:\\ 
+              (defn foo\\
+              \hspace{1cm}([] zero args)\\
+              \hspace{1cm}([x] one arg)\\
+              \hspace{1cm}([x y] two args)\\
+              \hspace{1cm}\ldots)
+      \end{itemize}
+  \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: Multi-arity Functions}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> (defn hello
+         ([name] (println "Hi" name))
+         ([name surname] (println "Hello Mr." name surname))
+         ([n sn prof] 
+           (hello n sn) 
+           (println "How is the" prof "business?")))
+#'user/hello
+user=> (hello "Bob")
+Hi Bob
+nil
+user=> (hello "Robert" "Terwilliger")
+Hello Mr. Robert Terwilliger
+nil
+user=> (hello "Robert" "Terwilliger" "TV")
+Hello Mr. Robert Terwilliger
+How is the TV business?
+nil
+\end{lstlisting}
+\end{frame}
+
+  \begin{frame}
+      \frametitle{Variable Length Arguments}
+
+      \begin{itemize}
+          \item (+ 1 2 3 \ldots 99 100) $\leftarrow$ Possible?
+          \item Special ``Trick''
+          \item (defn foo [a \& b] \ldots)
+              \begin{itemize}
+                  \item a $\rightarrow$ ``Normal Argument''
+                  \item \& b $\rightarrow$ List with Remaining Arguments
+              \end{itemize}
+          \item Experiment:\\
+              (defn my-fn [a \& b] (println a b))
+      \end{itemize}
+  \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: Variable Length Arguments Experiment}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> (defn my-fn [a & b] (println a b))
+#'user/my-fn
+user=> (my-fn :x)
+:x nil
+nil
+user=> (my-fn :x :y)
+:x (:y)
+nil
+user=> (my-fn :x :y :z)
+:x (:y :z)
+nil
+user=> (my-fn :x :y :z :foo :bar :baz)
+:x (:y :z :foo :bar :baz)
+nil
+user=> ; More later! 
+\end{lstlisting}
+\end{frame}
+
+
+  \begin{frame}
+      \frametitle{Arguments \& Anonymous Functions}
+
+      \begin{itemize}
+          \item (fn [a b] \ldots)
+              \begin{itemize}
+                  \item ``Same procedure as every year.''
+              \end{itemize}
+          \item \#()?
+              \begin{itemize}
+                  \item Special Convention
+                  \item \% and \%1 \%2 \ldots
+                  \item \#(println \%)
+                  \item \#(println \%1 \%2)
+              \end{itemize}
+      \end{itemize}
+  \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: Arguments \& Anonymous Functions}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> ((fn [a b] (println a b)) "foo" "bar")
+foo bar
+nil
+user=> (#(println %) "foo")
+foo
+nil
+user=> (#(println %1 %2) "foo" "bar")
+foo bar
+nil
+user=>  
+\end{lstlisting}
+\end{frame}
+
+\subsection{More Advanced Functions}
+
+  \begin{frame}
+      \frametitle{Higher-order Functions}
+
+      \begin{itemize}
+          \item Functions that return functions.
+          \item Functions that accept functions as arguments.
+          \item Remember: Functions are first-class!
+          \item Example
+              \begin{itemize}
+                  \item Multiply each element in a vector.
+                  \item E.\,g.: [1 2 3 4 5 6 7 8 9 10]
+                  \item \texttt{map} Function
+                  \item Plus (in our case) Anonymous Function for Multiplication
+                  \item (map \#(* 2 \%) [1 2 3 \ldots])
+              \end{itemize}
+      \end{itemize}
+  \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: Higher-order Functions}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> (map #(* 2 %) [1 2 3 4 5 6 7 8 9 10])
+(2 4 6 8 10 12 14 16 18 20)
+user=> (map #(+ 1 %) [1 2 3 4 5 6 7 8 9 10])
+(2 3 4 5 6 7 8 9 10 11)
+user=> (defn times-two [x] (* 2 x))
+#'user/times-two
+user=> (map times-two [1 2 3 4 5 6 7 8 9 10])
+(2 4 6 8 10 12 14 16 18 20)
+user=> (map #(* %1 %2) [1 2 3 4 5] [10 20 30 40 50])
+(10 40 90 160 250)
+user=>  
+\end{lstlisting}
+\end{frame}
+
+  \begin{frame}
+      \frametitle{Higher-order Functions (continued)}
+
+      \begin{itemize}
+          \item Sum up all elements of a vector.
+          \item ``Good Old Gauß''
+          \item \texttt{reduce} Function
+          \item First Argument: Function with Two Arguments
+          \item Second Argument: Sequence
+          \item Pass result of fn and element from sequence to next fn call.
+          \item 
+      \end{itemize}
+  \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: Higher-order Functions (continued)}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> (reduce #(+ %1 %2) [1 2 3 4 5 6 7 8 9 10])
+55
+user=> (range 1 11)
+(1 2 3 4 5 6 7 8 9 10)
+user=> (reduce #(+ %1 %2) (range 1 101))
+5050
+user=>  
+\end{lstlisting}
+\end{frame}
+
+  \begin{frame}
+      \frametitle{Variable Length Arguments}
+
+      \begin{itemize}
+          \item (+ 1 2 3 \ldots 99 100) $\leftarrow$ Possible?
+          \item Special ``Trick''
+          \item (defn foo [a \& b] \ldots)
+          \item Recall: ``\& b'' $\rightarrow$ List with remaining Arguments
+          \item Problem: How to process the list?
+          \item Solution: Higher-order Functions!
+      \end{itemize}
+  \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: Variable Length Arguments Experiment}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> (defn add
+          ([] 0)
+          ([x] x)
+          ([x y] (+ x y))
+          ([x y & more] (reduce add (add x y) more)))
+#'user/add
+user=> (add)
+0
+user=> (add 1)
+1
+user=> (add 1 2)
+3
+user=> (add 1 2 3)
+6
+user=> (add 1 2 3 4 5 6)
+21
+user=>  ; Same solution as in Clojures built-in + etc.
+\end{lstlisting}
+\end{frame}
+
+  \begin{frame}
+      \frametitle{Locals}
+
+      \begin{itemize}
+          \item (fn [x] \ldots)
+          \item x is a local.
+          \item Immutable
+          \item Once defined it cannot be changed!
+          \item Other way to create locals
+              \begin{itemize}
+                  \item \texttt{let}
+                  \item (let [y 1] (println y))
+              \end{itemize}
+      \end{itemize}
+  \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: Locals}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> (let [x 1] (println x))
+1
+nil
+user=>  
+\end{lstlisting}
+\end{frame}
+
+  \begin{frame}
+      \frametitle{Closures (Lexical Scope)}
+
+      \begin{itemize}
+          \item ``Close over locals''
+          \item (def my-fn (let [x 1] (fn [] (println x)))
+          \item More practical example
+              \begin{itemize}
+                  \item Higher-order Function
+                  \item Return a dynamically created function.
+                  \item E.\,g.: Create an ``add-x'' function.
+              \end{itemize}
+      \end{itemize}
+  \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{REPL: Closures}
+\begin{lstlisting}[basicstyle=\scriptsize]
+user=> (def my-fn (let [x 1] (fn [] (println x))))
+#'user/my-fn
+user=> (my-fn)
+1
+nil
+
+user=> (defn create-add [x] #(+ x %))
+#'user/create-add
+user=> (def plus-two (create-add 2))
+#'user/plus-two
+user=> (plus-two 1)
+3
+user=> (def plus-ten (create-add 10))
+#'user/plus-ten
+user=> (plus-ten 5)
+15
+user=>  
+\end{lstlisting}
+\end{frame}
+
+\section{Hands-on}
+\subsection{Automating Clojure Projects}
+
+  \begin{frame}
+    \frametitle{Leiningen}
+    \begin{block}{Overview}
+      \begin{itemize} 
+        \item ``Leiningen is for automating Clojure projects without setting your hair on fire.''
+        \item \url{https://github.com/technomancy/leiningen}
+      \end{itemize}
+    \end{block}
+    \begin{block}{Installation}
+      \begin{itemize} 
+        \item Get the ``lein'' shell script.
+        \item Put the script on your \$PATH, e.\,g., in /usr/local/bin
+        \item Run: lein self-install.
+      \end{itemize}
+    \end{block}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{What can Leiningen do for you?}
+    \begin{itemize}
+      \item Automation
+      \item Building
+      \item Running
+      \item Running Tests
+      \item Resolve and download dependencies.
+      \item \ldots
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Example Project}
+    \begin{itemize}
+      \item Command Line Calculator
+      \item ``foo-calc''
+      \item Example
+          \begin{itemize}
+              \item java -jar foo-calc.jar 2 + 3 $\rightarrow$ 5
+          \end{itemize}
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Example Project (continued)}
+    \begin{block}{Approach}
+        \begin{itemize}
+          \item Test-driven Development
+          \item Iterative Approach
+          \item Continuous Refactoring
+        \end{itemize}
+    \end{block}
+    \begin{block}{Prerequisites}
+        \begin{itemize}
+          \item REPL for Experiments, Prototyping
+          \item IDE/Editor for Coding
+          \item Leiningen for Running Tests, Building, etc.
+        \end{itemize}
+    \end{block}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Lets get started\ldots}
+    \begin{itemize}
+      \item Create a directory for your projects.
+      \item cd into that directory.
+      \item Run: lein new foo-calc
+      \item cd into the newly created project skeleton.
+      \item Explore the project skeleton.
+%      \item Run: lein test
+%      \item ``Add'' new project to your workspace.
+%      \item Add ``test'' directory as source folder.
+    \end{itemize}
+  \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Leiningen: New Project}
+\begin{lstlisting}[basicstyle=\scriptsize]
+[rc@colin examples]$ lein new foo-calc 
+Created new project in: /home/rc/repositories/research/rcgWiP/archive/clojure/examples/foo-calc
+Look over project.clj and start coding in foo_calc/core.clj
+[rc@colin examples]$ cd foo-calc/ 
+[rc@colin foo-calc]$ find 
+.
+./README
+./.gitignore
+./project.clj
+./test
+./test/foo_calc
+./test/foo_calc/test
+./test/foo_calc/test/core.clj
+./src
+./src/foo_calc
+./src/foo_calc/core.clj
+[rc@colin foo-calc]$  
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Leiningen: New Project (continued)}
+\begin{lstlisting}[basicstyle=\scriptsize]
+[rc@colin foo-calc]$ lein test 
+Copying 1 file to /home/rc/repositories/research/rcgWiP/archive/clojure/examples/foo-calc/lib
+ 
+Testing foo-calc.test.core
+ 
+FAIL in (replace-me) (core.clj:6)
+No tests have been written.
+expected: false
+  actual: false
+
+Ran 1 tests containing 1 assertions.
+1 failures, 0 errors.
+[rc@colin foo-calc]$  
+\end{lstlisting}
+\end{frame}
+
+  \subsection{Test-driven Development}
+
+\begin{frame}[fragile]
+\frametitle{Define Tests}
+\begin{itemize}
+\item \texttt{deftest}
+\begin{itemize}
+\item Define Test
+\end{itemize}
+\item \texttt{is}
+\begin{itemize}
+\item Test
+\end{itemize}
+\end{itemize}
+\begin{lstlisting}[basicstyle=\scriptsize]
+(deftest failing-test
+         (is (= 1 2)))
+(deftest succeeding-test
+         (is (= 1 1)))
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Leiningen: Running Tests}
+\begin{lstlisting}[basicstyle=\scriptsize]
+[rc@colin foo-calc]$ lein test 
+ 
+Testing foo-calc.test.core
+ 
+FAIL in (failing-test) (core.clj:6)
+expected: (= 1 2)
+  actual: (not (= 1 2))
+
+Ran 2 tests containing 2 assertions.
+1 failures, 0 errors.
+[rc@colin foo-calc]$  
+\end{lstlisting}
+\end{frame}
+
+  \begin{frame}
+    \frametitle{Start Coding}
+    \begin{itemize}
+      \item Start with a simple test.
+      \item 2 + 3 = 5
+      \item Implement function stub to make code compile.
+      \item Run test to assure the test fails.
+      \item Implement functionality.
+      \item Experiment on the REPL.
+      \item Run test to see if the implementation works correctly.
+    \end{itemize}
+  \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Leiningen: Test \& Stub}
+\begin{lstlisting}[basicstyle=\scriptsize]
+; Test
+(deftest simple-add-test
+         (is (= 5 (foo-calculate "2 + 3"))))
+; Stub
+(defn foo-calculate [input])
+; Test Output
+[rc@colin foo-calc]$ lein test 
+ 
+Testing foo-calc.test.core
+ 
+FAIL in (simple-add-test) (core.clj:11)
+expected: (= 5 (foo-calculate "2 + 3"))
+  actual: (not (= 5 nil))
+
+Ran 1 tests containing 1 assertions.
+1 failures, 0 errors.
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Very First Implementation (Needs a lot of improvement!)}
+\begin{lstlisting}[basicstyle=\scriptsize]
+(ns foo-calc.core
+; We need the split function from the clojure.string namespace.
+  (:use [clojure.string :only (split)]))
+
+(defn foo-calculate [input]
+  (let [input-vector (split input #" ")
+        operand-1 (read-string (input-vector 0))
+        operation (input-vector 1)
+        operand-2 (read-string (input-vector 2))]
+    (if (= operation "+")
+      (+ operand-1 operand-2))))
+; This implementation works but is pretty ugly and complicated.
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Possible Improvements}
+\begin{lstlisting}[basicstyle=\scriptsize]
+(defn foo-calculate [input]
+  (let [[op1 operation op2] (map read-string (split input #" "))]
+    ((resolve operation) op1 op2)))
+; Dangerous as "operation" might do something bad!
+
+; Better to check if we do something that is allowed.
+(defn foo-calculate [input]
+  (let [[op1 operation op2] (map read-string (split input #" "))
+        allowed-operations #{'+}]
+    (if (allowed-operations operation)
+      ((resolve operation) op1 op2))))
+; Looks better but may be still improved.
+\end{lstlisting}
+\end{frame}
+
+  \begin{frame}
+    \frametitle{Next Steps}
+    \begin{itemize}
+      \item More Tests
+      \item More Functionality
+      \item Increasing Complexity
+      \item $\rightarrow$ Iterative Test-driven Development
+      \item Try yourself.
+    \end{itemize}
+  \end{frame}
+
+  \subsection{Running the Application}
+
+  \begin{frame}
+    \frametitle{Run the application.}
+    \begin{block}{We want to \ldots}
+        \begin{itemize}
+          \item Run the application.
+          \item java -jar foo-calc.jar 3 + 4
+        \end{itemize}
+    \end{block}
+    \begin{block}{We need \ldots}
+        \begin{itemize}
+          \item ``main Method''
+          \item Runnable Jar
+        \end{itemize}
+    \end{block}
+  \end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Add a main method.}
+\begin{itemize}
+\item ``main Method''
+\end{itemize}
+\begin{lstlisting}[basicstyle=\scriptsize]
+(defn -main [& args]
+  (println (foo-calculate (first args))))
+\end{lstlisting}
+\begin{itemize}
+\item Additionally needed:
+\end{itemize}
+\begin{lstlisting}[basicstyle=\scriptsize]
+(ns foo-calc.core
+  (:use [clojure.string :only (split)])
+; In order to be able to call the main method
+; we need to add genclass here.
+  (:gen-class))
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Run via Leiningen.}
+\begin{itemize}
+\item lein run foo
+\item Interactive prompt may be problematic.
+\item $\rightarrow$ Run from command line.
+\end{itemize}
+\begin{lstlisting}[basicstyle=\scriptsize]
+[rc@colin foo-calc]$ lein run "1 + 2" 
+3
+[rc@colin foo-calc]$ 
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Create a jar.}
+\begin{itemize}
+\item ``Normal''
+\item ``Stand-alone''
+\item For Convenience $\rightarrow$ Stand-alone
+\end{itemize}
+\begin{lstlisting}[basicstyle=\scriptsize]
+[rc@colin foo-calc]$ lein uberjar 
+Copying 1 file to /home/rc/repositories/research/rcgWiP/archive/clojure/examples/foo-calc/lib
+Compiling foo-calc.core
+Compilation succeeded.
+Created /home/rc/repositories/research/rcgWiP/archive/clojure/examples/foo-calc/foo-calc-1.0.0-SNAPSHOT.jar
+Including foo-calc-1.0.0-SNAPSHOT.jar
+Including clojure-1.3.0.jar
+Created /home/rc/repositories/research/rcgWiP/archive/clojure/examples/foo-calc/foo-calc-1.0.0-SNAPSHOT-standalone.jar
+[rc@colin foo-calc]$  
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Run the jar.}
+\begin{itemize}
+\item Like any Java Command Line Application
+\item java -jar \ldots
+\end{itemize}
+\begin{lstlisting}[basicstyle=\scriptsize]
+[rc@colin foo-calc]$ java -jar \ 
+> foo-calc-1.0.0-SNAPSHOT-standalone.jar "3 + 4" 
+7
+[rc@colin foo-calc]$  
+\end{lstlisting}
+\end{frame}
+
+  \section{End}
+  \subsection{}
+  
+  \begin{frame}[c]
+    \frametitle{Summary}
+    \begin{itemize}
+        \item Clojure Basics
+            \begin{itemize}
+                \item Data Types
+                    \begin{itemize}
+                        \item Simple
+                        \item Complex
+                    \end{itemize}
+                \item Vars
+                \item Functions
+            \end{itemize}
+        \item 1st Class Functions
+        \item Higher-order Function
+        \item Homoiconic
+        \item Lexical Scope \& Closures
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}[c]
+    \frametitle{Summary (continued)}
+    \begin{itemize}
+        \item REPL
+        \item Lisp
+        \item Test-driven Development
+        \item Leiningen
+        \item Automating Projects
+        \item Run Command Line Applications
+        \item Create Deployable Jars
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}[c]
+    \frametitle{Take-away Message}
+    \begin{itemize}
+        \item Don't be scared.
+        \item Very Few, Simple Rules
+        \item Brackets are not harmful. ;)
+        \item Clojure $\rightarrow$ ``A Cool Language''
+        \item Quick Development
+        \item Powerful Features
+        \item A Nice Ecosystem
+        \item Worth the Effort!
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}[c]
+    \frametitle{More to come.}
+    \begin{itemize}
+          \item Macros
+          \item Variable Capture
+          \item Un-/Quoting
+          \item Laziness
+          \item Namespaces
+          \item Software Transactional Memory
+          \item Bindings
+          \item Java Interoperability
+          \item \ldots
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}[c]
+    \frametitle{End}
+    \begin{block}{Thank you for your attention!}
+      \pause
+      \begin{center}Questions?\end{center}
+    \end{block}
+  \end{frame}
+
+\end{document}
+
