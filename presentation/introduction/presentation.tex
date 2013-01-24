@@ -1279,6 +1279,20 @@ Ran 1 tests containing 1 assertions.
 \end{frame}
 
 \begin{frame}[fragile]
+\frametitle{Tell Leiningen about the ``main method''.}
+\begin{itemize}
+\item Leiningen needs to now the namespace the ``main method'' is in.
+\end{itemize}
+\begin{lstlisting}[basicstyle=\scriptsize]
+(defproject foo-calc "1.0.0-SNAPSHOT"
+  :description "FIXME: write description"
+  :dependencies [[org.clojure/clojure "1.3.0"]]
+; Here we tell Leiningen where to find the "main method".
+  :main foo-calc.core)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
 \frametitle{Run via Leiningen.}
 \begin{itemize}
 \item lein run foo
