@@ -1,0 +1,947 @@
+\chapter{Clojure Basics}
+Right now, you should have a working Clojure installation and know how to use the REPL.
+As with any other programming language, in order to get to know a programming language, you should have an at least basic knowledge of how to store things and how to do things.
+
+\section{Storing or Things}
+One of the most essential things you need to do in a programming language is to store data ``somewhere''.
+This ``somewhere'' is usually a variable.
+To do something similar like creating a variable, in Clojure, there is the concept of a \bfix{var}.
+
+On the first glance, vars might look identical to variables in other languages.
+However, there are some differences that are important when using more advanced techniques.
+For the start, it is completely safe when you think of a var as variable.
+Still, I'll refer to these as ``vars''.
+You should get used to this terminology and keep in mind that vars are actually not the same as what you know as variables from other languages.
+
+A var is essentially a \bfix{symbol} that references something else.
+This ``something else'' can be essentially everything in Clojure: basic types, complex types, or even functions.
+\footnote{On our way on learning Clojure we will at many times come across the notion of functions being ``first class''.
+As we will discover, having \bfix{first class functions} is one thing that makes Lisp-like languages like Clojure so very powerful.}
+
+Vars are said to be ``defined''.
+This is done using the ``\texttt{def}'' special form.
+Listing \vref{lst:def_var} shows how a var can be defined and ``accessed'' at the REPL.
+
+\begin{lstlisting}[label=lst:def_var, caption=Experiments with Boolean Values at the REPL]
+user=> (def foo "bar")
+#'user/foo
+user=> foo
+"bar"
+\end{lstlisting}
+
+What we actually did here is to \bfix{bind} the result of evaluating ``\texttt{bar}'' to the symbol ``\texttt{foo}''.
+As this is the initial binding\footnote{You could also read this as initial definition, but ``binding'' is more ``accurate''.} it is also called ``\bfix{root binding}''.
+We will later on pick up the terms ``binding'' and ``root binding'' again.
+For now, it is sufficient that you know where to put your data if you want to and how to use it.
+
+When we ``accessed'' the data stored in our var what we actually did was to evaluate the var, or more precisely the symbol.
+When a var is evaluated the result is the object that is referenced by the symbol, in our case the string ``\texttt{bar}''.
+
+\section{Data Types}
+Introducing all the data types and their particular tidbits might be a little tiresome.
+Hence, I will try to keep this as much on the point as necessary.
+If you like more details you should experiment quite a lot with the REPL while reading this chapter.
+
+When you experiment with the REPL you will probably find the ``\texttt{type}'' or ``\texttt{class}'' functions useful.
+With these functions you can get information about the type of an ``object''.
+
+\subsection{Basic Types}
+Clojure supports various basic types.
+If you already know a programming language many of these types should already be familiar for you.
+However, there may be also types you aren't used to (yet).
+
+The classification of ``basic'' data type I do here is a little bit arbitrary.
+Still, I hope it makes somewhat sense to you.
+Basic Clojure data types are, e.\,g.:
+
+\begin{itemize}
+  \item Boolean Values
+  \item Numbers
+    \begin{itemize}
+      \item Integer
+      \item Floating Point
+      \item Ratio
+    \end{itemize}
+  \item Characters
+  \item Strings
+  \item Keywords
+\end{itemize}
+
+\subsubsection{Boolean Values}
+Boolean values are probably the most simple data types in any programming language.
+In Clojure the two boolean values are represented as ``\bfix{true}'' and ``\bfix{false}''.
+
+Connected to boolean values there is a very simple rule in Clojure:
+everything except \bfix{false} and \bfix{nil} is treated as \texttt{true}.
+So, the only values that are treated as false are \texttt{false} and \texttt{nil}.
+This is a little bit different than some other Lisps that also treat empty lists as \texttt{false}.
+
+If you like to experiment at the REPL you can play around with different combinations of values.
+For this, you can use a simple statement like the one shown in Listing \vref{lst:boolean_values_experiment}.
+
+\begin{lstlisting}[label=lst:boolean_values_experiment, caption=Experiments with Boolean Values at the REPL]
+user=> (if true "true" "false")
+"true"
+user=> (if false "true" "false")
+"false"
+user=> (if 21 "true" "false")
+"true"
+user=> (if 0 "true" "false")
+"true"
+user=> (if "foo" "true" "false")
+"true"
+user=> (if nil "true" "false")
+"false"
+\end{lstlisting}
+
+As a little explanation of what we did in this Listing.
+Essentially, we just entered a list like ``\texttt{(if true "true" "false")}''.
+This construct is evaluated as follows:
+the first element ``\bfix{if}'' is a special form that evaluates the second element of the list, in our case here ``\texttt{true}''.
+Depending on the result of this evaluation either the third element, in case the second element evaluated to ``\texttt{true}'', or the fourth element, in case the second element evaluated to ``\texttt{false}'', is evaluated and the result is ``returned''.
+Here in this example ``\texttt{true}'', by definition, evaluates to ``\texttt{true}'' and thus the third element ``\texttt{"true"}''\footnote{This is a string. Note the quotation marks.} is evaluated and the result is ``returned''.
+
+\subsubsection{Numbers}
+Maybe the next more complex data type after boolean values are numeric data types.
+Clojure supports the ``standard'' integer and floating point data types as well as some more powerful representations.
+
+``Under the hood'', most numeric Clojure data types use some corresponding Java type or class.
+To get the class information of a data type you can use ``\texttt{type}'' or ``\texttt{class}'' as shown in Listing \vref{lst:numeric_types}.
+
+\begin{lstlisting}[label=lst:numeric_types, caption=Types of Numeric Values]
+user=> (type 1)
+java.lang.Long
+user=> (type 2.3)
+java.lang.Double
+user=> (type 123456789123456789123456789)
+clojure.lang.BigInt
+\end{lstlisting}
+
+Here you can see that Clojure really uses primarily the numerical Java data types like ``\bfix{java.lang.Long}'' and ``\bfix{java.lang.Double}''.
+More precisely, it uses the according Java classes instead of the simple Java data types.
+
+Another noteworthy observation is that in the last statement the type is ``\bfix{clojure.lang.BigInt}'' or just ``\bfix{BigInt}'' in short.
+Clojure allows the seamless usage integer values of arbitrary size.
+The conversion from ``\texttt{java.lang.Long}'' to ``\texttt{clojure.lang.BigInt}'' is done automatically.
+Alternatively, it is possible to force the use of BigInt even for small values by appending an ``\texttt{N}'' like ``\texttt{123N}''.
+
+Similarly to the ``\texttt{123N}'' notation, you can use ``\texttt{4.56M}'' to define a ``\bfix{java.lang.BigDecimal}'' or \bfix{BigDecimal} in short.
+This could be useful if you have special requirements with respect to floating point precision.
+
+There is another data type in Clojure that is different from the ones above.
+This type is ``\bfix{clojure.lang.Ratio}'' or just \bfix{Ratio} in short.
+The ratio is used for representing fractions of individual integer values.
+An example is shown in Listing \vref{lst:ratio}.
+
+\begin{lstlisting}[label=lst:ratio, caption=Ratio Data Type]
+user=> (/ 2 3)
+2/3
+user=> (type (/ 2 3))
+clojure.lang.Ratio
+user=> (/ 12 4)
+3
+user=> (type (/ 12 4))
+java.lang.Long
+user=> (/ 6 15)
+2/5
+\end{lstlisting}
+
+In this example we used the ``\texttt{/}'' function for dividing two integer values.
+Note that the ratio type is only used when necessary as can be seen in the third and fourth experiment.
+Furthermore, note that fractions are automatically reduced as can be seen in the last test.
+With the ratio type it is possible to precisely represent fractions that could otherwise not 100\% precisely represented with floating point numbers.
+
+I suggest that you experiment at least a little bit at the REPL with the different numerical types and functions.
+Additional numerical functions you could use are ``\texttt{+}'', ``\texttt{-}'', ``\texttt{*}'', or ``\texttt{mod}''.
+
+\subsubsection{Characters}
+Characters are represented as ``\bfix{java.lang.Character}'' instances.
+To create such an instance the following notation is used: ``\texttt{$\backslash$X}''.
+This creates the character ``X''\footnote{Which can be pretty handy to mark a spot.}.
+
+\subsubsection{Strings}
+Similarly to most other types so far, Clojure strings are essentially Java strings: ``\bfix{java.lang.String}''.
+The straight forward way to define a string is to enclose it in quotation marks like this: ``\texttt{"Some String"}''.
+
+\subsubsection{Keywords}
+Keywords are a data type that is very unique to Lisp languages.
+To the best of my knowledge there is no equivalent to keywords in languages like C, C++, or Java.
+
+Keywords are very special:
+keywords always evaluate to themselves.
+To get a feeling for this just try it yourself at the REPL as shown in Listing \vref{lst:keywords}.
+
+\begin{lstlisting}[label=lst:keywords, caption=Keywords]
+user=> :foo
+:foo
+\end{lstlisting}
+
+You can see that the keyword ``\texttt{:foo}'' evaluates to itself, namely ``\texttt{:foo}''.
+The convention for defining keywords is that they start with a colon, ``\texttt{:}''.
+
+Later on we will also see that keywords can be used as functions.
+This can be very convenient when dealing with some complex data structures.
+
+\subsection{More Complex Data Structures}
+Here, I want to introduce the most important more complex data types that are available in Clojure.
+There are some even more sophisticated constructs that allow you to create your own custom data structures.
+For now, it is sufficient for us to explore the more complex data structures that are readily available straight away.
+
+When you come from an object-oriented language like Java it could be a little difficult to think in these comparingly (compared to extensive class hierarchies) simple data structures.
+However, you will be surprised how powerful Clojures complex data structures are.
+
+In the following we will cover the following data structures:
+\begin{itemize}
+  \item lists,
+  \item vectors,
+  \item sets,
+  \item and maps.
+\end{itemize}
+With these data structures you should be able to solve most computing/programming tasks.
+
+Note that these data structures are immutable or ``persistent''.
+This means that, by default, a data structure cannot be changed after it had been created.
+Instead, when working with these data structures (like adding or removing elements), a new data structure that reflects the change is returned.
+
+On the first glance this may sound very resource intensive.
+However, Clojure has some clever tricks to make this actually very efficient.
+
+\subsubsection{Lists}
+A List, in a nutshell, simply contains an arbitrary number of objects in a sequence.
+Unlike sets (see \vref{sec:sets}), lists may contain the same object multiple times.
+
+Recall that lists in Lisp are treated specially:
+the first element is expected to be something that can be called or executed.
+Because of this, lists as data structures cannot be simply entered ``as-is''.
+If you try to enter a list of integers like ``\texttt{(1 2 3)}'' as-is you will get an error as shown in Listing \vref{lst:list_error_2}.
+
+\begin{lstlisting}[label=lst:list_error_2, caption=Error on Entering a List ``as-is'']
+user=> (1 2 3)
+ClassCastException java.lang.Long cannot be cast to clojure.lang.IFn  user/eval26 (NO_SOURCE_FILE:14)
+user=> 
+\end{lstlisting}
+
+However, you do not have to worry.
+There are ways how a list like this can still be entered.
+
+One way is to use the ``\texttt{list}'' function.
+Listing \ref{lst:list_list} shows how this can be done.
+
+\begin{lstlisting}[label=lst:list_list, caption=Create a list.]
+user=> (list 1 2 3)
+(1 2 3)
+user=> 
+\end{lstlisting}
+
+Another way is ``\bfix{quoting}''.
+With ``quoting'' you, basically, tell Clojure that it shall not treat a list specially, and thus try to execute the first element,
+but that it should take the list as-is instead.
+
+You can quote in two ways:
+firstly using the \bfix{quote} special form,
+or, alternatively, with ``\texttt{'}''.
+Listing \vref{lst:list_quote} shows how lists can be entered this way.
+
+\begin{lstlisting}[label=lst:list_quote, caption=Enter lists using quoting.]
+user=> (quote (1 2 3))
+(1 2 3)
+user=> '(1 2 3)
+(1 2 3)
+user=> (type '(1 2 3))
+clojure.lang.PersistentList
+user=> 
+\end{lstlisting}
+
+A list may contain different data types.
+Listing \vref{lst:list_heterogeneous} shows this exemplarily.
+
+\begin{lstlisting}[label=lst:list_heterogeneous, caption=A List Containing Different Data Types]
+user=> '(1 :keyword "String" \x)
+(1 :keyword "String" \x)
+user=> 
+\end{lstlisting}
+
+Functions or accessing data stored in a list and working with lists are, e.\,g., ``\texttt{nth}'', ``\texttt{peek}'', ``\texttt{pop}'', or ``\texttt{.indexOf}''.
+Listing \vref{lst:list_work} shows these in action.
+Remember that we can create a var (``\texttt{def}''; bind to a symbol) for any entity in Clojure.
+
+\begin{lstlisting}[label=lst:list_work, caption=Work with a list.]
+user=> (def my-list '("one" "two" "three"))
+#'user/my-list
+user=> (nth my-list 1)
+"two"
+user=> (peek my-list)
+"one"
+user=> (pop my-list)
+("two" "three")
+user=> (.indexOf my-list "two")
+1
+user=> 
+\end{lstlisting}
+
+Note that list indices start with ``0''.
+
+Last but not least, adding elements to a list can be done with ``\texttt{conj}'' and ``\texttt{cons}.
+This is shown in Listing \vref{lst:list_add}.
+
+\begin{lstlisting}[label=lst:list_add, caption=Add things to a list.]
+user=> (def foo-list '("one" "two"))
+#'user/foo-list
+user=> (conj foo-list "three")
+("three" "one" "two")
+user=> (conj foo-list "three" "four")
+("four" "three" "one" "two")
+user=> (cons "three" foo-list)
+("three" "one" "two")
+user=> 
+\end{lstlisting}
+
+Recall that Clojures core data structures are immutable.
+Hence, the ``original'' list is not changed by adding new elements.
+Instead the results of adding elements to a list are new lists that are, here in the example, printed to stdout.
+
+Also note that when used with a list ``\texttt{conj}'' adds elements to the front of the list.
+The location where new elements are added depends on the type of collection data type that is passed to ``\texttt{conj}''.
+Furthermore, note that ``\texttt{conj}'' allows to add multiple elements at once.
+``\texttt{cons}'' on the other hand always adds one element to the front of a sequence data type.
+
+If you want to quickly look-up a function for a specific purpose I suggest that you consult the Clojure Cheat Sheet\footnote{\url{http://clojure.org/cheatsheet}}.
+
+\subsubsection{Vectors}
+Similar to a list, a vector is a sequence of objects.
+One difference, however, is that the elements in a vector are indexed.
+This means that they can be quickly accessed by their index.
+
+A vector can be created, e.\,g., with ``\texttt{[]}'' or ``\texttt{vector}'' as shown in Listing \vref{lst:vector_create}.
+In most Clojure code you will find/use the short-hand ``\texttt{[]}''.
+
+\begin{lstlisting}[label=lst:vector_create, caption=Create vectors.]
+user=> (vector 1 2 3)
+[1 2 3]
+user=> [1 2 3]
+[1 2 3]
+user=> [1 "two" :three]
+[1 "two" :three]
+user=> 
+\end{lstlisting}
+
+One interesting property of vectors is that they are also functions on their own;
+a vector is a function of its indices.
+This is shown in Listing \vref{lst:vector_fn}.
+
+\begin{lstlisting}[label=lst:vector_fn, caption=Vector as Function of its Indices]
+user=> (def my-vec ["one" "two" "three"])
+#'user/my-vec
+user=> (my-vec 0)
+"one"
+user=> (my-vec 2)
+"three"
+user=> 
+\end{lstlisting}
+
+``\texttt{conj}'' and ``\texttt{cons}'' are two ways for adding things to a vector.
+Note that when used with a vector, ``\texttt{conj}'' adds new elements to the end instead of the front, like is done when used with a list.
+``\texttt{cons}'' on the other hand, works exactly the same way as with a list; it adds a single element to the front.
+The usage of these two functions is shown in Listing \vref{lst:vector_add}.
+
+\begin{lstlisting}[label=lst:vector_add, caption=Two Examplary Functions for Adding Things to a Vector]
+user=> (def bar-vec ["one" "two"])
+#'user/bar-vec
+user=> (conj bar-vec "three")
+["one" "two" "three"]
+user=> (conj bar-vec "three" "four")
+["one" "two" "three" "four"]
+user=> (cons "three" bar-vec)
+("three" "one" "two")
+user=> 
+\end{lstlisting}
+
+Again, recall, that a vector is immutable.
+Hence, the original vector is not changed by adding elements to it.
+
+I encourage you to have a look in the Clojure Cheat Sheet and play around with the different functions that are available for a vector.
+
+\subsubsection{Sets}
+\label{sec:sets}
+A set may also contain multiple objects.
+However, unlike the previous two data structures (lists and vectors), sets cannot contain an object more than once.
+
+The Clojure way to define sets is, e.\,g., ``\texttt{hash-set}'' or ``\texttt{\#\{\}}'' as is shown in Listing \vref{lst:set_create}.
+Usually, the short-hand version ``\texttt{\#\{\}}'' is used most of the time.
+
+\begin{lstlisting}[label=lst:set_create, caption=Create sets.]
+user=> (hash-set 1 2 3)
+#{1 2 3}
+user=> #{1 2 3}
+#{1 2 3}
+user=> #{1 "two" :three}
+#{1 "two" :three}
+user=> #{1 "two" :three :three}
+IllegalArgumentException Duplicate key: :three  clojure.lang.PersistentHashSet.createWithCheck (PersistentHashSet.java:68)
+user=> 
+\end{lstlisting}
+
+Sets only contain a single instance of the same element; the attempt to create a set that contains the same element multiple times fails.
+This can be seen in the last example in the above listing.
+
+Again, ``\texttt{conj}'' can be used to add elements to a set as shown in Listing \vref{lst:set_add}.
+When an element is already contained in the set an unchanged version of the set is returned.
+Also note that, by default, there is no guarantee where elements are added to a set.
+
+\begin{lstlisting}[label=lst:set_add, caption=Add to a set.]
+user=> (def my-set #{"one" "two"})
+#'user/my-set
+user=> (conj my-set "three")
+#{"one" "two" "three"}
+user=> (conj my-set "three" "four")
+#{"four" "one" "two" "three"}
+user=> (conj my-set "two")
+#{"one" "two"}
+user=> (conj my-set "three" "four" 3 4 :kw :kx "abc" "def")
+#{"abc" 3 4 "def" "four" "one" "two" :kw :kx "three"}
+user=> 
+\end{lstlisting}
+
+Similarly to vectors, sets are also functions.
+Sets are functions of their elements.
+If an element is contained in set it will be returned, otherwise \texttt{nil} is returned (see Listing \vref{lst:set_fn}).
+
+\begin{lstlisting}[label=lst:set_fn, caption=Set as Function of its Elements]
+user=> (my-set "one")
+"one"
+user=> (my-set "fortytwo")
+nil
+user=> 
+\end{lstlisting}
+
+The ``\texttt{contains?}'' function can be used to check whether a set contains a given item.
+``\texttt{contains?}'' evaluates to either ``\texttt{true}'' or ``\texttt{false}''; such functions are also referred to as \bfix{predicate functions}.
+In Clojure it is said to be ``\bfix{idiomatic}'' to append a question mark to predicate functions.
+With ``idiomatic'' it is meant that this no hard rule defined by the language but pure convention in order to ease the readability.
+In the literature you will encounter the term ``idiomatic Clojure'' quite frequently.
+Listing \vref{lst:set_contains} shows ``contains?'' in action.
+
+\begin{lstlisting}[label=lst:set_contains, caption=contains?]
+user=> (contains? my-set "one")
+true
+user=> (contains? my-set "fortytwo")
+false
+user=> 
+\end{lstlisting}
+
+For more functions for working with sets I suggest to read the Clojure Cheat Sheet or the according API documentation.
+As usual, I encourage you to play around with these at the REPL.
+
+\subsubsection{Maps}
+A map is an associative memory.
+In a map ``\texttt{values}'' are assigned to ``\texttt{keys}''.
+For known \texttt{keys} the corresponding \texttt{values} can be easily looked up.
+
+Ways for creating a map are, e.\,g., ``\texttt{hash-map}'' or ``\texttt{\{\}}''.
+As for the other data structures there are also other ways for doing this, however, I just exemplarily mention these two.
+Listing \vref{lst:map_create} shows these in action.
+
+\begin{lstlisting}[label=lst:map_create, caption=Create sets.]
+(user=> (hash-map :foo "foo" :bar "bar")
+{:foo "foo", :bar "bar"}
+user=> {:foo "foo" :bar "bar"}
+{:foo "foo", :bar "bar"}
+user=> {:foo "foo", :bar "bar"}
+{:foo "foo", :bar "bar"}
+user=> {:foo "foo", :bar "bar", "meaning-of-life" 42}
+{"meaning-of-life" 42, :foo "foo", :bar "bar"}
+user=> 
+\end{lstlisting}
+
+The use of a comma is optional.
+In Clojure, commas are treated as white-space.
+However, some say it is easier to read when the different key/value tuples are separated by commas.
+
+You might have already guesses it, like sets and vectors, maps are functions.
+This time maps are functions of their keys; they return the value for a given key or \texttt{nil} if the key is not found (see Listing \vref{lst:map_fn}).
+In the last examples you can also see that keywords can be used as functions as well:
+when a keyword is used as function and a map is passed the keyword will be looked up in that map.
+If it is found the associated value is returned and nil otherwise.
+
+\begin{lstlisting}[label=lst:map_fn, caption=Look things up in a map.]
+user=> (def my-map {:a "a" :b "b" "c" "see"})
+#'user/my-map
+user=> (my-map :a)
+"a"
+user=> (my-map :d)
+nil
+user=> (my-map "c")
+"see"
+user=> (my-map "Y")
+nil
+user=> (:b my-map)
+"b"
+user=> (:x my-map)
+nil
+user=> 
+\end{lstlisting}
+
+The ``\texttt{assoc}'' function, as shown in Listing \vref{lst:map_assoc} is one way to add new key/value pairs to a map.
+If a key is already contained in the map, its value is set to the one supplied with assoc.
+Please have a look at the Clojure documentation like the Cheat Sheet for a full overview of functions that can be applied to maps.
+
+\begin{lstlisting}[label=lst:map_assoc, caption=Look things up in a map.]
+user=> (assoc my-map :d "d")
+{"c" "zeh", :a "a", :b "b", :d "d"}
+user=> (assoc my-map :b "bee")
+{"c" "zeh", :a "a", :b "bee"}
+user=> 
+\end{lstlisting}
+
+\section{``Make it so!''}
+So far, we just installed Clojure, learned a little bit about the REPL, looked into data types, and some complexer data structures.
+Now it is time to actually get things done!
+
+One way to ``do something'' in Clojure is via functions.
+There are also other ways like macros but I consider those more advanced.
+Still, you will find out that functions are already very powerful on their own.
+
+In this section we'll just look at functions.
+You will define your first functions, use them, and also learn a little bit more about what it means to use functions in Clojure.
+
+\subsection{Defining Functions}
+One way to ``create'' functions in Clojure is the ``\texttt{fn}'' special form.
+The syntax of ``\texttt{fn}'' is as follows: ``\texttt{(fn [args] body)}''.
+The ``\bfix{body}'' of a function is where the ``things the function does'' are defined.
+Listing \vref{lst:fn} shows how ``\texttt{fn}'' is used.
+
+\begin{lstlisting}[label=lst:fn, caption=Usage of fn]
+user=> (fn [] (println "My first function"))
+#<user$eval7$fn__8 user$eval7$fn__8@6b915330>
+user=> 
+\end{lstlisting}
+
+So far so good, but how can we benefit from this?
+And what did actually happen?
+
+What we did was to create a so called ``\bfix{anonymous function}''.
+An anonymous function simply is a function without a name.
+If you look at the listing again you can see that we simply used ``\texttt{fn}'' to create a function, and indeed we didn't do anything special to ``give it a name''.
+
+Consequently, the ``result'' printed in the REPL, basically, is the string representation of a function in Clojure.
+This way we cannot do anything meaningful with that anonymous function right now.
+Later on, we will also find useful applications for such anonymous functions.
+However, for now, we start with simpler concepts, and thus, want to give our function a name such that we can call it via that name.
+
+Recall that functions in Clojure are \bfix{first class}.
+This, essentially, means that we can handle functions like any other ``entity'', e.\,g., data types, of the language.
+
+So, what would we need to do to give our anonymous function a name?
+In the preceding section we used ``\texttt{def}'' to create \bfix{vars} for storing data.
+%In Clojure (and any other Lisp) \textbf{code is data}; this is also referred to as ``\bfix{homoiconic}''.
+If we combine the property of our functions being first class and the possibility to ``store'' something via the ``\texttt{def}'' special form the solution to this problem is easy, as is shown in Listing \vref{lst:def_fn}.
+
+\begin{lstlisting}[label=lst:def_fn, caption=Use \texttt{def} and \texttt{fn} to Give a Function a Name]
+user=> (def foo (fn [] (println "Hello function!")))
+#'user/foo
+user=> foo
+#<user$foo user$foo@23c24c1e>
+user=> 
+\end{lstlisting}
+
+To repeat what we did here:
+\begin{itemize}
+  \item We created an anonymous function with ``\texttt{fn}''.
+  \item A function in Clojure is ``first class'', i.\,e., an entity of the language not different than, e.\,g., data types or structures.
+  \item We bound the anonymous function to the symbol ``\texttt{foo}'' with the ``\texttt{def}'' special form. 
+    That way we, essentially, gave the function a name.
+  \item Last but not least, we checked, what we stored in the \textbf{bf} by accessing it the way we learned before.
+    And indeed, we see an output similar as in the first example of an anonymous function;
+    with the exception that we can see now that our function has a name.
+\end{itemize}
+I repeat this here in this very detail because this is an important property of Clojure that is very much different to what you may be used to from other, procedural or object-oriented languages.
+If you understand that functions are first class and what it means for functions to be first class you did a big step towards understanding Clojure and other Lisp-like languages.
+
+Other important properties of functions being first class is that you can pass functions as parameters to other functions and even can return functions from functions.
+We will take a look into this later on.
+
+By the way, do not confuse functions in Clojure with function pointers, e.\,g., in C.
+The property of functions being first class is much more powerful than what is possible with, e.\,g., function pointers.
+
+\subsection{``Calling'' Functions}
+Right now, we know how to create functions and how to name them.
+But to really use them we also need to call them.
+
+You should actually already know how to do this.
+Nonetheless, we will cover this here.
+So, don't worry, if you don't know how this is done right away.
+
+Recall that a named function is just a var in which a function is ``stored''.
+Above we saw that when we just evaluate the var we get the function stored in the var but the function is not executed.
+
+Recall as well that there is a special rule in Clojure (or ``Lisps'' in general) that says \bfix{lists} (``\texttt{(\ldots)}'') are special in the way that the first element of a list is expected to be something that can be called or executed.
+
+So, if we combine these two properties, we can easily call our custom function.
+Listing \vref{lst:call_named_fn} shows how this is done.
+
+\begin{lstlisting}[label=lst:call_named_fn, caption=``Call'' a Named Function]
+user=> (def foo (fn [] (println "Hello function!")))
+#'user/foo
+user=> (foo)
+Hello function!
+nil
+user=> 
+\end{lstlisting}
+
+%TODO: Explain why ``call'' is in quotation marks.
+
+In this example we simply called our named ``\texttt{foo}'' function we created.
+
+Now, a question to you: Could we call an anonymous function as well?
+And, if ``yes'', how would we do this?
+To solve this, simply follow the few, simple rules you learned up to now.
+The solution is shown in Listing \vref{lst:call_anonymous_fn}.
+
+\newpage
+
+\begin{lstlisting}[label=lst:call_anonymous_fn, caption=``Call'' an Anonymous Function]
+user=> ((fn [] (println "Hello function!")))
+Hello function!
+nil
+user=> 
+\end{lstlisting}
+
+That's it.
+It's as simple as this.
+And you will notice that it is following the same, simple rules all the time.
+Simply place the function as first element of a list.
+Thereby, it doesn't matter if we use a named or anonymous function.
+Also, if our function does not have any parameters the list simply consists of a single argument,the function.
+
+For now, we used very simple examples and using an anonymous function seems not to make sense.
+However, you will discover that there are good use-cases for anonymous functions.
+
+\subsection{Homoiconicity Refined}
+You learned that in Clojure code is data.
+You also learned that this property of the code of a language being written in the data structures of the language is called ``\bfix{homoiconic}''.
+
+Here, I just want to take a short look at this again.
+Up to now you only saw that \bfix{lists}, expressed using round brackets (``\texttt{(\ldots)}'') are heavily used in Clojure.
+
+If you were paying attention in the preceding chapters you should have noticed that another data structure had been used there to define code as well.
+Recall the syntax of a function definition: ``\texttt{(fn [args] body)}''.
+
+Here you can see that, additionally to a list, a vector, expressed via rectangular brackets (``\texttt{[\ldots]}''), is used to define the function arguments.
+
+\subsection{Shortcuts}
+With Clojure it is possible to write very concise code.
+One way of how Clojure enables you to keep your code short and to the point are ``shortcuts''.
+These shortcuts can be ways for doing multiple things at once or special syntax for frequently used things.
+Here I mention two ``shortcuts'' that ease the way functions are defined.
+
+\subsubsection{\texttt{defn}}
+Needing to type ``\texttt{(def foo (fn \ldots))}'' all the time is not too much code, especially as compared to other languages, but it may become tedious quickly.
+To safe us the worry, the Clojure developers created the \texttt{defn} macro.
+
+With ``\texttt{defn}'' you can create a function and store it in a var in one step.
+The syntax of ``\texttt{defn}'' is similar to the syntax of ``\texttt{fn}'': ``\texttt{(defn foo [args] body)}''.
+In Listing \vref{lst:defn} this is shown in action.
+
+\begin{lstlisting}[label=lst:defn, caption=``\texttt{defn}'' as Shortcut]
+user=> (defn [] (println "Hello function!")))
+#'user/foo
+user=> (foo)
+Hello function!
+nil
+user=> 
+\end{lstlisting}
+
+%TODO: Start explaining macros already here?
+We will cover \bfix{macros} in more depth later.
+However, here you might be already interested in what the ``\texttt{defn}'' macro actually does.
+
+Macros, in a nutshell, are functions that are used to write code.
+So, what ``\texttt{defn}'' does is, it creates the ``\texttt{(def foo (fn \ldots))}'' construct for you;
+i.\,e., a construct like ``\texttt{defn foo \ldots}'' will be expanded to ``\texttt{(def foo (fn \ldots))}''.
+We can verify this in action when we use some more advanced techniques as shown in Listing \vref{lst:defn_expanded}.
+
+\begin{lstlisting}[label=lst:defn_expanded, caption=``\texttt{defn}'' transforms your code to ``\texttt{(def foo (fn \ldots))}''.]
+user=> (macroexpand '(defn foo [] (println "Hello function!")))
+(def foo (clojure.core/fn ([] (println "Hello function!"))))
+user=>
+\end{lstlisting}
+
+I hope you are not confused right now.
+You should not try to understand everything here.
+What you should take away is that ``\texttt{defn}'' is some convenience utility that writes code for you and thus allows you, e.\,g., to keep your programs shorter.
+You can see this in the Listing \vref{lst:defn_expanded}: the ``\texttt{(defn foo \ldots)}'' construct is ``transformed'' to ``\texttt{(def foo (clojure.core/fn \ldots)}''.
+Also note that this really transforms one bit of code into another bit of code;
+the result in the REPL is not some cryptic string representation of a function but is in fact Clojure code.
+
+Later in this document you will learn how to write your own macros for doing such things.
+You will also learn how to do even much more sophisticated things with macros that open up a whole new world of how to ``write'' code.
+More precisely, you will learn how you can write programs that write your programs for you.
+
+\subsubsection{Anonymous Functions Abbreviated}
+You already learned that Clojure offers many ways to keep code short;
+e.\,g., when you learned about Clojures more complex data structures.
+
+Anonymous functions are pretty often used, so it is not surprising that there is also an abbreviation for those.
+The shorthand for defining an anonymous function if: ``\texttt{\#(\ldots)}''.
+Listing \vref{lst:anonymous_fn_shortcut} exemplarily shows how this is done.
+
+\begin{lstlisting}[label=lst:anonymous_fn_shortcut, caption=Shortcut for Creating Anonymous Functions]
+user=> #(println "Hello anonymous function shortcut!")
+#<user$eval13$fn__14 user$eval13$fn__14@5803e54a>
+user=> (#(println "Hello anonymous function shortcut!"))
+Hello anonymous function shortcut!
+nil
+user=>  
+\end{lstlisting}
+
+\subsection{Passing Parameters}
+So far, we saw how to define functions, how to ``call'' them, and also had a look into the details under the hood, but we missed a very important functionality: 
+we didn't use parameters yet.
+What we usually want to do in computing is to process data.
+In a nutshell, we usually have to pass data to functions in form of parameters.
+
+We already briefly mentioned that parameters in a function definition are denoted as a vector.
+Now, we will see how we can make use of this and also have a look at some examples.
+For the sake of brevity we will directly use the ``\texttt{defn}'' macro instead of manually combining ``\texttt{def}'' and ``\texttt{fn}''.
+
+We start by looking at the definitions of a function that accepts parameters.
+We will use a very simple example and create our own ``\texttt{add}'' function that takes two parameters and returns the sum.
+The definition of the ``\texttt{add}'' function is shown in Listing \vref{lst:defn_add}.
+
+\begin{lstlisting}[label=lst:defn_add, caption=Defining a Function with Parameters]
+user=> (defn add [a b] (+ a b))
+#'user/add
+user=>  
+\end{lstlisting}
+
+Here, we created the ``\texttt{add}'' function that accepts two parameters which are internally called ``\texttt{a}'' and ``\texttt{b}''.
+Then in the function we use the built-in ``\texttt{+}'' function to compute the sum of ``\texttt{a}'' and ``\texttt{b}'' which is then returned as result of our ``\texttt{add}'' implementation.
+
+The usage of this function is similar to any other function, macro, or special form in Clojure.
+We, again, use the special rule that lists are treated speially, name the function as first list element and pass the parameters as second and third elements.
+This is shown in Listing \vref{lst:add_usage}.
+
+\begin{lstlisting}[label=lst:add_usage, caption=Using our own Function with Parameters]
+user=> (add 1 2)
+3
+user=>  
+\end{lstlisting}
+
+\subsubsection{Arity}
+The term ``\bfix{arity}'' describes the number of parameters a functions accepts.
+In Clojure we can define so called ``\bfix{multi-arity}'' functions; 
+functions that accept different numbers of parameters.
+E.\,g., recall our initial ``infix-notation example'' where we introduced the ``\texttt{+}'' function for the first time;
+we showed how we can pass different numbers of arguments to this function (for convenience see Listing \vref{lst:+_multi-arity}).
+
+\begin{lstlisting}[label=lst:+_multi-arity, caption=The ``\texttt{+}'' function accepts different numbers of arguments.]
+user=> (+ 1)
+1
+user=> (+ 1 2)
+3
+user=> (+ 1 2 3 4 5 6)
+21
+user=>  
+\end{lstlisting}
+
+So, how can we do this?
+Listing \vref{lst:add_multi_1} shows our first attempt on creating a multi-arity version of our ``\texttt{add}'' function.
+
+\begin{lstlisting}[label=lst:add_multi_1, caption=First Try on a Multi-arity Function]
+user=> (defn add
+         ([] 0)
+         ([a] a)
+         ([a b] (+ a b))
+         ([a b c] (add a (add b c))))
+#'user/add
+user=>  
+\end{lstlisting}
+
+Note that I indented the code manually in order to make it easier to read.
+What this function definition does, is to create an ``\texttt{add}'' function that accepts either zero, one, two, or three parameters.
+As you see, the definition for each arity is a list that first takes a vector for the parameters and is then followed by the so called function ``\bfix{body}''.
+The ``body'' is, essentially, where the ``things to be done'' in a function are defined.
+
+So, now, lets try to use our new, improved ``\texttt{add}'' function (see Listing \vref{lst:multi_1_usage}
+
+\begin{lstlisting}[label=lst:multi_1_usage, caption=Using our First Multi-arity Function]
+user=> (add)
+0
+user=> (add 1)
+1
+user=> (add 1 2)
+3
+user=> (add 1 2 3)
+6
+user=> (add 1 2 3 4)
+ArityException Wrong number of args (4) passed to: user$add  clojure.lang.AFn.throwArity (AFn.java:437)
+user=>  
+\end{lstlisting}
+
+In the first tries, our function works as expected.
+I will not go into the details here, you should be able to see what's going on by comparing the examples with the definition.
+But when we try to pass a fourth parameter we miserably fail and get an ``\texttt{ArityException}''.
+This should be no surprise as we only defined the function for up to three parameters.
+
+But remember the ``\texttt{+}'' function.
+There we could easily pass five parameters and (trust me here or try yourself) we could have passed any arbitrary number of parameters.
+How could we do this?
+
+One, very long shot, could be to manually add definitions for even higher arities.
+This, however, not only would be extremely tedious, it would also not be possible to do this for all possible arities\footnote{Also note that the maximum arity of a function in Clojure is limited to 20.}.
+Furthermore, you would expect the folks at Clojure to be much more clever, and in fact they are.
+
+The trick is that you can define functions to accept a \bfix{variable number of parameters}.
+This can be achieved with ``\bfix{\&}''.
+``\texttt{\&}'' is a pretty neat trick.
+With ``\texttt{\&}'' you can, basically, tell Clojure to put all remaining parameters (those not explicitly listed before the ``\texttt{\&}'') into a list.
+The name of this list is then written behind the ``\texttt{\&}''.
+However, you should at first experiment a bit with this to get used to it.
+
+In Listing \vref{lst:arity_test} we, at first, define a function that accepts one ``normal'' parameter and takes then a parameter list using ``\texttt{\&}''.
+The function simply prints the first parameter and the argument list to ``\texttt{stdout}''.
+Afterwards, we call this function with different numbers of arguments.
+
+\begin{lstlisting}[label=lst:arity_test, caption=Testing Variable Length Parameters]
+user=> (defn test-arity [a & foo] (println "First parameter:" a "Remaining parameter list:" foo))
+#'user/test-arity
+user=> (test-arity 1)
+First parameter: 1 Remaining parameter list: nil
+nil
+user=> (test-arity 1 2)
+First parameter: 1 Remaining parameter list: (2)
+nil
+user=> (test-arity 1 2 3)
+First parameter: 1 Remaining parameter list: (2 3)
+nil
+user=>  
+\end{lstlisting}
+
+Here, you can see that if only a single parameter is passed, the list ``\texttt{foo}'' is ``\texttt{nil}''.
+Later, when more parameters are passed you can see that these ``remaining'' parameters are put into the list named ``\texttt{foo}''.
+This way a variable number (equal or bigger than the number of ``normal'' parameters) can be passed.
+
+One way to exploit this feature is via recursive function calls.
+Thereby, the parameter list can be consumed step-by-step; with each recursive call the remaining list is reduced until all parameters had been processed.
+This is shown in Listing \vref{lst:test-arity-rec}.
+
+\begin{lstlisting}[label=lst:test-arity-rec, caption=Recursively Processing Variable Length Parameters]
+user=> (defn test-arity-rec
+         ([a] (println a))
+         ([a & b] (test-arity-rec a) (apply test-arity-rec b)))
+#'user/test-arity-rec
+user=> (test-arity-rec 1)
+1
+nil
+user=> (test-arity-rec 1 2)
+1
+2
+nil
+user=> (test-arity-rec 1 2 3)
+1
+2
+3
+nil
+user=>  
+\end{lstlisting}
+
+When called with a single parameter the function shown here simply prints that parameter.
+When more parameters are passed the first parameter is printed by calling the one-parameter version and then the rest of the parameters (the list ``\texttt{b}'') is processed recursively as long as all parameters had been processed.
+
+With this knowledge we can improve our ``\texttt{add}'' function from the beginning.
+A possible way of doing this is shown in Listing \vref{lst:add_improved}.
+
+\begin{lstlisting}[label=lst:add_improved, caption=Improved ``\texttt{add}'' Function]
+user=> (defn add
+         ([] 0)
+         ([a] a)
+         ([a b] (+ a b))
+         ([a b & c] (apply add (add a b) c)))
+#'user/add
+user=> (add)
+0
+user=> (add 1)
+1
+user=> (add 1 2)
+3
+user=> (add 1 2 3)
+6
+user=> (add 1 2 3 4)
+10
+user=> (add 1 2 3 4 5)
+15
+user=>  
+\end{lstlisting}
+
+The trick here is the last definition which enables the use of a variable number of parameters via ``\texttt{\& c}''.
+What ``\texttt{(apply add (add a b) c))}'' does is this:
+it first adds ``\texttt{a}'' and ``\texttt{b}'' via the two parameter version of ``\texttt{add}'' and then calls ``\texttt{add}'' with the result and the remaining parameters in the list ``\texttt{c}''.
+
+\subsubsection{Passing Parameters to Anonymous Functions}
+Similarly to named functions you can also pass parameters to \bfix{anonymous functions}.
+One way is to use the ``\texttt{fn}'' special form and define parameters exactly the same way as we did above for ``\texttt{defn}'' (see Listing \vref{lst:anon_param_fn}).
+
+\begin{lstlisting}[label=lst:anon_param_fn, caption=Anonymous Function and Parameters via ``\texttt{fn}'']
+user=> ((fn [a] (println a)) 1)
+1
+nil
+user=> ((fn [a b] (println a b)) 1 2)
+1 2
+nil
+user=> ((fn [a b & c] (println a b c)) 1 2 3)
+1 2 (3)
+nil
+user=> ((fn [a b & c] (println a b c)) 1 2 3 4)
+1 2 (3 4)
+nil
+user=>  
+\end{lstlisting}
+
+With the shortcut version of ``\texttt{fn}'' parameters are denoted using ``\bfix{\%}''.
+With a single parameter using ``\texttt{\%}'' and ``\texttt{\%1}'' is equivalent.
+For more parameters you can simply use increasing numbers ``\texttt{\%2}'', ``\texttt{\%3}'', etc.
+Last but not least, ``\texttt{\%\&}'' is the syntax for variable length parameter lists.
+This all is shown in Listing \vref{lst:anon_fn_params}.
+
+\begin{lstlisting}[label=lst:anon_fn_params, caption=Anonymous Function and Parameter via Shortcut]
+user=> (#(println %) 1)
+1
+nil
+user=> (#(println %1) 1)
+1
+nil
+user=> (#(println %1 %2) 1 2)
+1 2
+nil
+user=> (#(println %1 %2 %&) 1 2 3)
+1 2 (3)
+nil
+user=> (#(println %1 %2 %&) 1 2 3 4)
+1 2 (3 4)
+nil
+user=>  
+\end{lstlisting}
+
+\subsection{Higher-order Functions}
+A ``\bfix{higher-order function}'', in a nutshell, is a function that takes another function as parameter and/or returns a function as result.
+This may, at first, appear strange to you when you are not used to functional programming, but this is a very powerful feature.
+
+One common use case for higher-order functions is, e.\,g., to process sequences and apply an operation to its elements.
+Say, we have a vector of integers and want to double or square these.
+That's what the ``\texttt{map}'' function is for\footnote{Do not confuse this with the ``\texttt{hash-map}'' function which creates the associative memory also called ``map''.}.
+Listing \vref{lst:map_test} shows this in action.
+
+\begin{lstlisting}[label=lst:map_test, caption=Using the Higher-order function ``\texttt{map}'' to Process a Sequence]
+user=> (map #(* % 2) [1 2 3 4 5])
+(2 4 6 8 10)
+user=> (map #(* % %) [1 2 3 4 5])
+(1 4 9 16 25)
+user=> 
+\end{lstlisting}
+
+
+
+
+
+
+

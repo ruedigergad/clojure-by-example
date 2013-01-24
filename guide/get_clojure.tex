@@ -1,0 +1,106 @@
+\chapter{Get Clojure}
+\label{sec:get_clojure}
+This is a hands-on guide.
+You are strongly encouraged to try all the examples yourself.
+So, the very first step is to actually get Clojure.
+
+As Clojure runs on top of the JVM you need a working Java installation to actually work with Clojure.
+Since this guide is on Clojure and not on Java the details of installing Java are not covered here.
+Nowadays, most will have a working Java installation anyhow.
+
+Depending on your setup, there are different ways for installing Clojure.
+In the following some of these ways are explained.
+
+\section{Installation via a Package Manager}
+\label{sec:install_via_package_manager}
+If you are using a ``common'' Linux distribution like Debian, Ubuntu, Fedora, or Gentoo the convenient way to install Clojure is via the respective package manager.
+This way also all required dependencies (like Java) will be automatically installed if necessary.
+The following snippets, see Listings \vrefrange{lst:clojure_install_debian}{lst:clojure_install_gentoo}, show the corresponding commands for installing Clojure on some popular Linux distributions.
+
+\begin{lstlisting}[label=lst:clojure_install_debian, caption=Installation of Clojure on Debian and Debian-based distributions like Ubuntu or Kubuntu]
+apt-get install clojure
+\end{lstlisting}
+
+\begin{lstlisting}[label=lst:clojure_install_fedora, caption=Installation of Clojure on Fedora or Red Hat]
+yum install clojure
+\end{lstlisting}
+
+\begin{lstlisting}[label=lst:clojure_install_gentoo, caption=Installation of Clojure on Gentoo or Funtoo]
+emerge clojure
+\end{lstlisting}
+
+Note that all of these commands are to be run as ``\texttt{root}'' user.
+
+\section{Manual Installation}
+\label{sec:manual_install}
+If, for whatever reason, you cannot or don't want to install Clojure via a package manager you can install it manually.
+If you already installed Clojure via a package manager as described in the previous section you can safely skip this section and go on in section \vref{sec:test_clojure_installation}.
+This approach also applies to operating systems that do not offer centralized package management, like MacOS or Windows.
+In this case you need to take care of installing Java yourself, if it is not already installed.
+
+The most recent Clojure version can be downloaded from \url{http://clojure.org/downloads}.
+I suggest to use the latest stable version.
+Simply download the \texttt{*.zip} file, extract it, and copy the contained \texttt{clojure-<VERSION>.jar} file somewhere on your computer.
+In case of Linux the directory ``\texttt{/usr/local/lib}'' could be a good place to put the JAR file.
+Note that you usually need \texttt{root} privileges to put a file in ``\texttt{/usr/local/lib}'', so, copy the file as \texttt{root} or via \texttt{sudo}.
+
+As of the time of writing the latest stable version of Clojure is 1.4.0.
+Also note that we are not using the file ending with ``\texttt{-slim.jar}'' but use the ``full version'' instead.
+
+Once you got the JAR file you can run Clojure, more precisely the Read Eval Print Loop (REPL), as shown in Listing \vref{lst:run_clojure_simple}.
+
+\begin{lstlisting}[label=lst:run_clojure_simple, caption=Run Clojure from the Command Line]
+java -jar <PATH_TO_FILE>/clojure-<VERSION>.jar
+\end{lstlisting}
+
+For convenience, I suggest to create a script for running Clojure.
+This way, you do not need to memorize the full command line, including the location where you put the JAR file, but just need to know the name the script file.
+
+If you put that file somewhere on your \texttt{\$PATH} you can conveniently run that script from the command line like any other program.
+In case of Linux, the directory ``\texttt{/usr/local/bin}'' is usually a good place to put your custom scripts.
+Similarly to when copying the JAR file you will usually need \texttt{root} privileges to put files in ``\texttt{/usr/local/bin}''.
+
+In Listing \vref{lst:simple_start_script} and example of such a script, say ``\texttt{/usr/local/bin/clojure}'', for Linux is given.
+Do not forget to set the permissions accordingly such that common users can execute the script (see Listing \vref{lst:set_permissions_on_script}).
+
+\begin{lstlisting}[label=lst:simple_start_script, caption=Simple Script to Run Clojure]
+#!/bin/sh
+java -jar <PATH_TO_FILE>/clojure-<VERSION>.jar
+\end{lstlisting}
+
+\begin{lstlisting}[label=lst:set_permissions_on_script, caption=Setting Permissions for the Start-up Script]
+chmod 755 /usr/local/bin/clojure
+\end{lstlisting}
+
+With this script you should now be able to simply start the Clojure REPL by executing the script, e.\,g., by typing ``\texttt{clojure}''.
+We will soon improve this script in order to allow more convenient interaction with the REPL.
+
+\section{Test the Installation}
+\label{sec:test_clojure_installation}
+At this stage you should have a working Clojure installation.
+To test this either run your custom start script as created in section \vref{sec:manual_install} or run the start script as supplied by your distribution, in case you installed Clojure via a package manager as described in section \vref{sec:install_via_package_manager}.
+The Clojure start script is usually called ``\texttt{clojure}''.
+
+Simply execute the respective script in a terminal.
+You should now see the Clojure REPL as shown in Listing \vref{lst:first_start}.
+
+\begin{lstlisting}[label=lst:first_start, caption=First Start of the Clojure REPL]
+[rc@colin ~]$ clojure 
+Clojure 1.4.0
+user=>
+\end{lstlisting}
+
+For now we are not doing anything with the REPL;
+it is sufficient that it is working.
+To exit the REPL for now type ``\texttt{(System/exit 0)}'' as shown in Listing \vref{lst:first_exit}.
+
+\begin{lstlisting}[label=lst:first_exit, caption=Leave the REPL for now]
+[rc@colin ~]$ clojure 
+Clojure 1.4.0
+user=> (System/exit 0)
+[rc@colin ~]$
+\end{lstlisting}
+
+We will do the first steps in the REPL in section \vref{sec:first_repl_steps}.
+Before we do this we add a little it of ``candy'' for working more conveniently with the REPL (see section \vref{sec:improve_repl}).
+

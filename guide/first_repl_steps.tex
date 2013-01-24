@@ -1,0 +1,284 @@
+\chapter{First Steps in the REPL}
+\label{sec:first_repl_steps}
+In this chapter we will execute the first, simple Clojure code.
+We do this by interactively playing around and experimenting with the \bfix{Read Eval Print Loop} (\bfix{REPL}).
+
+Up to now we only did some preparations.
+Now it is the time to get your hands on real Clojure code.
+
+We will start very simple and will slowly increase the complexity.
+During this chapter we will introduce the very basics of Clojure like data types, how to ``call'' functions,
+%(In Clojure functions are said to be ``evaluated''.)
+basic data structures, how to define ``variables'', how to create our own functions, and will already mention some Clojure specific terminology.
+
+Do not be disappointed, afraid, or confused if you don't grasp or memorize everything right away.
+I will try to repeat the important things later on in following chapters.
+Here, the primary intent is that you get started with actually playing around with Clojure.
+I just introduce some terminology already here so that you get used to this terminology.
+By the way, repetition is considered a good way for learning. ;)
+
+\section{Hello \cancel{World} REPL}
+As the very first step we will continue with a slightly modified tradition when learning programming languages.
+We will make the REPL say ``Hello'' to us.
+
+So start the REPL by executing the respective start script as set up in chapter \vref{sec:get_clojure}.
+In the REPL type ``\texttt{(println ''Hello REPL!``)}''.
+The result should look like shown in Listing \vref{lst:hello_repl}.
+
+\begin{lstlisting}[label=lst:hello_repl, caption=Say ``Hello'' REPL! -- ``Hello REPL!'']
+[rc@colin clojure-by-example]$ clojure 
+Clojure 1.4.0
+user=> (println "Hello REPL!")
+Hello REPL!
+nil
+user=> 
+\end{lstlisting}
+
+What happened here?
+In the REPL you executed, more particularly evaluated, your first function (``\texttt{println}'').
+Here, we can make different noteworthy observations:
+firstly, how the REPL works and why it is called Read Eval Print Loop.
+Secondly, what the REPL displays.
+Additionally, you see that Clojure code is, most probably, very different to what you might be used to 
+(If you haven't done much with Lisp or one of its dialects yet.\footnote{If you are new to Lisp-like languages be prepared, but not scared, to see lots of brackets. ;)}).
+
+\section{How does the REPL work?}
+Shown in Listing \vref{lst:hello_repl} is what the output of evaluating your very first function in the REPL looks like.
+In the third line you can see the REPL prompt: ``\texttt{user=>}''.
+At this prompt you can enter arbitrary Clojure code.
+
+\begin{enumerate}
+  \item In the first step, the REPL \textbf{reads} the code entered at the prompt (see Listing \vref{lst:hello_repl} line 3).
+  \item Then it \textbf{evaluates} (In Clojure/Lisp terminology code is evaluated.) what had been read.
+  \item Afterwards it \textbf{prints} the results (see Listing \vref{lst:hello_repl} line 4 and 5).
+  \item Finally, it displays the prompt again and waits for input in order to perform the next \textbf{loop} iteration (see Listing \vref{lst:hello_repl}).
+\end{enumerate}
+
+So, this is, in a nutshell, the very simple and pragmatic reason why the Read Eval Print Loop or short ``REPL'' is called the way it is.
+
+Please note that ``reading'' in this case is not what we humans usually associate with reading a text or in computing terms typically understand as ``reading'' a file from disk into memory.
+In fact during the so called \bfix{read phase} much more may happen than just ``getting'' code from the REPL prompt or from a Clojure file.
+The read phase is one of two phases during which code is processed in Clojure.
+The second such phase is the so called \bfix{evaluation phase}.
+The differentiation between these two phases will become important later when we start talking about what is known as ``macros''.
+For now, we simply ignore the distinction between those phases for the sake of simplicity and rather proceed with some more basics.
+
+\section{What does the REPL display?}
+If you have read the previous section the answer is very simple:
+the REPL prints out the result of evaluating the code put into it.
+
+However, we have to be more accurate here.
+Clojure functions may ``return'' ``something'' as result of their evaluation.
+%TODO: What is the Clojure terminology for ``returning'' something?
+This result is one of the things printed at the REPL.
+
+On the other hand, we may have console output (usually stdout or stderr) that is printed as well.
+In the above example we used the function ``\texttt{println}'' to write ``Hello REPL!'' to stdout.
+This console output is shown in line 4 of Listing \vref{lst:hello_repl}.
+
+The actual ``return value'' is then printed below this output in line 5.
+Here the ``returned'' value is ``\bfix{nil}''.
+\texttt{nil} is a special value that can be compared to ``\texttt{NULL}'' or ``\texttt{null}'' in other languages like C++ or Java respectively.
+
+To get a better idea of this difference just enter some code that does not print anything but solely evaluates to a value.
+In order to try this we will simply add two numbers by entering ``\texttt{(+ 19 23)}''.
+The result is shown in Listing \vref{lst:simple_add}.
+
+\begin{lstlisting}[label=lst:simple_add, caption=Simple Addition in the REPL]
+user=> (+ 19 23)
+42
+\end{lstlisting}
+
+\section{Clojure: A Lisp Dialect}
+Clojure is a \bfix{Lisp} dialect.
+This has certain implications on the way Clojure code is written and represented.
+In this section we will look at some of the basic implications connected with using a Lisp-like language like Clojure.
+
+What you might have noticed first is that everything is written encapsulated within brackets ``\texttt{(\ldots)}''.
+To understand this, a little bit of background about Lisp is required.
+Lisp is a shorthand for ``\bfix{list processing}'', and this is basically what all Lisp-like languages do: they process lists.
+
+In Clojure, and many other Lisps, a \bfix{list} is denoted using round brackets: ``\texttt{(<1st element> <2nd element> <3rd element> \ldots)}''.
+So, when you entered ``\texttt{(+ 19 23)}'' at the REPL what you did was to enter a list with first element ``\texttt{+}'', second element ``\texttt{19}'', and third element ``\texttt{23}''.
+
+At this point, it is important to know that there is a special convention in Clojure (or Lisps in general) that defines that lists are treated specially.
+This convention, essentially, says that the first element of a list is expected to be ``something'' that can be called or executed.
+That ``something'' may be a \bfix{function}, a \bfix{macro}, or a \bfix{special form}.
+For now, we will not look into the differences of these three;
+at this point, it is sufficient to know that the first element of a list is expected to be ``callable'' or ``executable''.
+
+To cross-check the above statement and to make yourself a little bit more comfortable with this convention just try to enter a list that has a first element that cannot be evaluated;
+e.\,g., enter ``\texttt{(3 5 9)} at the REPL and try to evaluate this.
+The result should look similar to what is shown in Listing \vref{lst:list_error}.
+
+\begin{lstlisting}[label=lst:list_error, caption=Result of an Attempt to Evaluate a List with a Non-evaluable First Item]
+user=> (3 5 9)
+ClassCastException java.lang.Long cannot be cast to clojure.lang.IFn  user/eval19 (NO_SOURCE_FILE:11)
+user=>
+\end{lstlisting}
+
+Here, you can see that the attempt to evaluate a list that does not contain an item that can be executed in the very first position fails with an exception.
+More particularly, the exception states that and object of type ``\texttt{java.lang.Long}'' cannot be cast to ``\texttt{clojure.lang.IFn}''.
+This is because Clojure tries to cast the first element in the list to ``\texttt{clojure.lang.IFn}'' in order to call or execute it.
+However, the first element in this list is ``\texttt{3}'' which is of type ``\texttt{java.lang.Long}''.
+Thus, the exception is thrown as shown in Listing \vref{lst:list_error}.
+
+This special way lists are treated has some consequences when entering or coding lists.
+We will come back to this later when it gets important.
+
+Another thing you can observe here is the notion of Clojure being \bfix{homoiconic}.
+%TODO: Explain where the term ``homoiconic'' originates from?
+Homoiconic, essentially, means that the source code is written in the data structures as provided by the language itself.
+So Clojure source code, basically, consists of Clojure data structures.
+In the very simple example here you could already see that the basic way to formulate expressions is done via lists.
+Later on we will also see how different data structures are used in different places.
+Being homoiconic is a very neat feature that, as we will see later, allows very powerful operations.
+
+When you are new to Clojure you might be surprised by some of its conventions.
+However, keep in mind that there are very few conventions ``built into'' Clojure.
+If you compare this to a different language like C++ there are much more conventions built into the language which makes it much less flexible than Lisp-dialects like Clojure.
+Conventions defined in C++ are, e.\,g., keywords like ``\texttt{class}'', ``\texttt{void}'', ``\texttt{int}'', or ``\texttt{new}'' but also syntactical constructs like how class or method definitions are structured (using combinations of round and curly brackets with semi-colons as deliminators etc.).
+
+Clojure, on the other hand, allows you to freely change it in nearly any way you want.
+You will be able to, essentially, create your own programming language that is tailored to fit the needs of a specific issue or task.
+This is what is a also known as \bfix{domain specific language} (\bfix{DSL}).
+However, for now, we do not go into such advanced topics like DSLs.
+
+Yet another thing you might have noticed is that the ``operation'' is expected to be the first element of a list.
+Because Clojure expects the ``operation'' or ``operator'' to be the first element, it is also said to use ``\bfix{prefix notation}''.
+This is called ``prefix notation'' because the ``operator'' is ``in front of'' (which roughly translates to ``pre'' or ``prefix'' in Latin) the operands; e.\,g., ``\texttt{(+ 1 2)}''.
+Prefix notation might be a little different to what you are already used to from other languages like Python, C, C++, or Java, for at least mathematical operations.
+For mathematical expressions, these languages use what is referred to as ``\bfix{infix notation}''.
+The name of ``infix notation'' essentially describes that the operator is ``in between'' the operands; e.\,g., ``\texttt{1 + 2}''. 
+
+Prefix notation allows to have more than two operators per operation.
+E.\,g., with prefix notation you can do the following: ``\texttt{(+ 1 2 3 4 5)}''.
+With infix notation you would need to chain the operator like this: ``\texttt{1 + 2 + 3 + 4 + 5}''.
+
+\section{Help to Help Yourself}
+%``Give someone a fish and you'll feed him for one day. Teach him to fish and you'll feed him a life long.'' -- Original Author Unknown.
+With this document I try to provide a guide to Clojure.
+However, you should be ready and prepared to search for answers on your own as well.
+Hence, I introduce some ways for finding help for Clojure.
+
+\subsection{Built-in Help}
+Within the REPL you can use a built-in interactive documentation look-up feature.
+This is roughly similar the interactive help features like in Python or R.
+
+For this documentation look-up there exist two functions:
+\begin{itemize}
+  \item \bfix{doc}
+  \item and \bfix{find-doc}
+\end{itemize}
+
+With ``\texttt{doc}'' you can lookup the documentation for a particular function, macro, special form, etc.
+The syntax for using \texttt{doc} is as follows: \texttt{(doc <NAME>)}, with \texttt{<NAME>} being the entity you want to look up.
+An example for looking up a documentation is shown in Listing \vref{lst:doc_lookup}.
+
+\begin{lstlisting}[label=lst:doc_lookup, caption=Documentation Look-up]
+user=> (doc +)
+-------------------------
+clojure.core/+
+([] [x] [x y] [x y & more])
+  Returns the sum of nums. (+) returns 0. Does not auto-promote
+  longs, will throw on overflow. See also: +'
+nil
+user=>
+\end{lstlisting}
+
+In this example we looked up the documentation for the ``\texttt{+}'' function\footnote{Yes, in Clojure it is completely valid to name a function ``+''. Another interesting point might be that ``\texttt{+}'' is indeed a function and not something built into the language like is the case for C or Java.}.
+For now, you will most probably not understand everything that is printed there.
+Do not worry about this, as you learn more about Clojure you will step by step learn what all the things printed there mean.
+Here, it is sufficient for you to memorize that Clojure offers nice tools if you are in need for help.
+Note that when looking up macros and special forms, the output will mention that the particular entity is a macro or a special form.
+
+With ``\texttt{find-doc}'' you can search in the documentation.
+In the simplest case, you can simply supply a string that will be searched for.
+An example of searching for a string is shown in Listing \vref{lst:find-doc_string}.
+Please note that, for the sake of brevity, not the full output is shown there.
+I put in ``\ldots'' to indicate that things had been left out.
+
+\begin{lstlisting}[label=lst:find-doc_string, caption=Search the Documentation for a String]
+user=> (find-doc "split")
+-------------------------
+clojure.core/partition-by
+([f coll])
+  Applies f to each value in coll, splitting it each time f returns
+   a new value.  Returns a lazy seq of partitions.
+-------------------------
+...
+-------------------------
+clojure.string/split-lines
+([s])
+  Splits s on \n or \r\n.
+nil
+user=> 
+\end{lstlisting}
+
+A more sophisticate way to search the documentation is to use \bfix{regular expressions} (\bfix{regex}).
+\texttt{find-doc} also accepts regex and will then search for these.
+Assume you want to look up how to split strings you could, e.\,g., use something like this: ``\texttt{(find-doc \#"Split.*string")}''.
+The result of this is shown in Listing \vref{lst:find-doc_regex}.
+
+\begin{lstlisting}[label=lst:find-doc_regex, caption=Search the Documentation via Regex]
+user=> (find-doc #"Split.*string")
+-------------------------
+clojure.string/split
+([s re] [s re limit])
+  Splits string on a regular expression.  Optional argument limit is
+  the maximum number of splits. Not lazy. Returns vector of the splits.
+nil
+user=> 
+\end{lstlisting}
+
+Not that ``\#"something"'' is the Clojure shorthand to create a regular expression.
+For now, you do not need to memorize this.
+I will remember you how to create regex once it becomes important again.
+
+\subsection{Clojure Cheat Sheet}
+The Clojure Cheat Sheet is intended for quickly looking up the most important information about Clojure.
+Essentially, it is a quick reference for the Clojure basics.
+Personally, I found it to be a invaluable tool for quickly looking things up.
+
+You can browse the Clojure Cheat Sheet online at the Clojure homepage \footnote{\url{http://clojure.org/cheatsheet}} or download it in PDF format from there: \url{https://github.com/jafingerhut/clojure-cheatsheets/blob/master/pdf/cheatsheet-usletter-color.pdf?raw=true}.
+%FIXME: Add proper links!
+I suggest to download the PDF version and store it somewhere on you computer, so you have it always with you.
+
+\subsection{Online API Documentation}
+On the Clojure homepage there is also a browsable API documentation.
+This documentation is very useful if you are searching for certain functionality that goes beyond what is covered in the Clojure Cheat Sheet.
+
+Additionally, you will find links to the source code of all the functions or macros that make up the Clojure API there.
+This can be very handy if you like to peek into the code, e.\,g., to see how the real Clojure experts solve problems.
+
+%TODO: Explain how to download the help from github?
+
+\subsection{Books}
+There also exists quite a number of books about Clojure.
+Personally, I found ``Clojure in Action'' by Amit Rathore and ``The Joy of Clojure'' by Michael Fogus and Chris Houser, both available from Manning publications, very helpful for learning Clojure.
+
+\section{Bye REPL!}
+Last but not least you surely want to eventually close the REPL.
+Recall that Clojure is running in a Java Virtual Machine (JVM).
+So, for closing the REPL it is sufficient to shut the JVM down.
+
+We can simply shut the JVM down via the static ``\texttt{exit}'' Method in the Java ``\texttt{System}'' class.
+To do this simply type ``\texttt{(System/exit 0)}'' in the REPL as shown in Listing \vref{lst:repl_exit}.
+
+\begin{lstlisting}[label=lst:repl_exit, caption=Quit the REPL]
+user=> (System/exit 0)
+[rc@colin clojure-by-example]$
+\end{lstlisting}
+
+You did this already before in section \vref{sec:test_clojure_installation} when you tested your Clojure installation,
+but this time you know a little better what you are doing.
+Don't worry about too many details for now, we will cover them bit by bit.
+
+Closing the REPL is presumably the very first time where you make use of Clojures (very great) Java interoperability features.
+In this example here you simply called a static method of a common Java class.
+Clojure offers many great ways for interoperating with Java.
+
+Essentially, you can use all Java code and libraries inside Clojure \footnote{I, e.\,g., use Clojures Java interoperability features in ``cljNetPcap'' (\url{https://github.com/ruedigergad/cljNetPcap}), a wrapper and convenience library for working with ``jNetPcap'' (\url{http://jnetpcap.com/}) from within Clojure.}.
+In turn, you can also run Clojure code from within Java.
+But, as you might have guessed, we will cover more details later.
+

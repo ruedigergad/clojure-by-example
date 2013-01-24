@@ -1,0 +1,114 @@
+\chapter{Sweeten the REPL}
+\label{sec:improve_repl}
+At this stage you should already have a working Clojure installation.
+To be honest, the steps we do now are optional.
+Still, I highly recommend doing them now.
+
+If you are impatient and want to hack right away you can skip this section and jump directly to section \vref{sec:first_repl_steps}.
+You can come back and do the steps described here at any time later on.
+
+Right now, you can already launch a Clojure REPL.
+However, it is not very convenient to work with it as it is at the moment.
+We will change that here.
+We will modify the start script to allow much more convenient interaction with the REPL.
+
+This modification will add a ``history''.
+With this history you can scroll back and forth in ``old'' things that you had already entered earlier.
+This is similar to what you might already be used to in a shell or terminal.
+
+There are different options for realizing this.
+Depending on which option you choose, you will also be able to also search in your history using the key combination ``\texttt{CTRL+R}'', like in the Bourne-again Shell (bash).
+In the following I will describe two options:
+\begin{itemize}
+  \item using \texttt{rlwrap}
+  \item and using \texttt{jline}.
+\end{itemize}
+
+\section{\texttt{rlwrap} Method}
+\label{sec:rlwrap}
+\texttt{rlwrap} is a wrapper for \texttt{readline}.
+This is the recommended method when you are using a Linux distribution as operating system.
+Reasons are that this is more powerful and it is easier to use as compared to using \texttt{jline}.
+
+To use \texttt{rlwrap} two steps are necessary:
+installing \texttt{rlwrap} and modifying the Clojure start script.
+
+\subsection{Install \texttt{rlwrap}}
+First of all, you need to install \texttt{rlwrap} with your favorite package manager.
+Below Listings \vrefrange{lst:rlwrap_install_debian}{lst:rlwrap_install_gentoo} exemplarily show the installation of \texttt{rlwrap} for some Linux distributions.
+
+\begin{lstlisting}[label=lst:rlwrap_install_debian, caption=Installation of \texttt{rlwrap} on Debian and Debian-based distributions like Ubuntu or Kubuntu]
+apt-get install rlwrap
+\end{lstlisting}
+
+\begin{lstlisting}[label=lst:rlwrap_install_fedora, caption=Installation of \texttt{rlwrap} on Fedora or Red Hat]
+yum install rlwrap
+\end{lstlisting}
+
+\begin{lstlisting}[label=lst:rlwrap_install_gentoo, caption=Installation of \texttt{rlwrap} on Gentoo or Funtoo]
+emerge rlwrap
+\end{lstlisting}
+
+\subsection{Modify Clojure Start Script}
+Finally, the Clojure start script needs to be modified.
+This modification is very simple.
+It is sufficient to add ``\texttt{rlwrap}'' in front of the ``\texttt{java}'' call in the startup script.
+
+In the case of the custom start script as created in section \vref{sec:manual_install} the new start script looks as shown in Listing \vref{lst:improved_start_script}.
+
+\begin{lstlisting}[label=lst:improved_start_script, caption=Modified Start Script with \texttt{rlwrap}]
+#!/bin/sh
+rlwrap java -jar <PATH_TO_FILE>/clojure-<VERSION>.jar
+\end{lstlisting}
+
+If Clojure was installed via the package manager as described in section \vref{sec:install_via_package_manager} there are two options:
+Firstly, a custom start script as described in section \vref{sec:manual_install} can be created or the existing start script can be modified.
+
+When modifying the existing start script at first the start script must be located.
+You can locate the start script, e.\,.g, with \texttt{which}.
+In Listing \vref{lst:which_clojure} I show what it looks like on my computer.
+
+\begin{lstlisting}[label=lst:which_clojure, caption=Locating the Distribution Supplied Clojure Start Script]
+[rc@colin ~]$ which clojure
+/bin/clojure
+\end{lstlisting}
+
+Now that we know the Clojure start script is ``\texttt{/bin/clojure}'' we can edit this file and add the \texttt{rlwrap} call.
+The modification is analogous to the modification of the custom start script as described above;
+simply ``\texttt{rlwrap}'' must be added in front of ``\texttt{java}''.
+I am using Fedora, the modified start script is shown in Listing \vref{lst:fedora_improved_clojure_script}.
+
+\begin{lstlisting}[label=lst:fedora_improved_clojure_script, caption=Modified Clojure Start Script on Fedora 17]
+#!/bin/bash
+exec rlwrap java ${JAVA_OPTS} -jar /usr/share/java/clojure.jar "$@"
+\end{lstlisting}
+
+\section{\texttt{jline} Method}
+Similarly to \texttt{rlwrap}, \texttt{jline} is a wrapper that adds some convenience to textual input user interfaces.
+One difference is that \texttt{jline} is written in Java.
+This has the big advantage that it is operating system independent and also works with MacOS or Windows.
+On the other hand, \texttt{jline} is not as powerful as \texttt{rlwrap}.
+However, using \texttt{jline} is still a huge improvement as compared to using the REPL without it.
+
+In the following, I will deliberately skip instructions for installing and using \texttt{jline} via a package manager.
+Reason for this is that I assume that if you are using a package manager you are going with the \texttt{rlwrap} method as described in section \vref{sec:rlwrap}.
+
+Similarly to the \texttt{rlwrap} method, using jline requires the two steps of getting it and integrating it into the script.
+
+\subsection{Get \texttt{jline}}
+You can download \texttt{jline} from \url{http://sourceforge.net/projects/jline/files/}.
+Simply download the \texttt{*.zip} file, extract it, and store the \texttt{*.jar} file somewhere on your computer.
+Similarly to the manual Clojure installation method, a good place for putting the \texttt{*.jar} (on Linux) could be \texttt{/usr/loca/lib}.
+
+\subsection{Modify the Start Script}
+After \texttt{jline} had been downloaded and saved the start script needs to be modified.
+I will only cover modifying the custom start script here;
+As already stated, I assume that you are not going with this method when you used the package manager for installing Clojure and while, hence, favor the \texttt{rlwrap} approach.
+In Listing \vref{lst:jline_improved_clojure_script} the modified version of the script as created in section \vref{sec:manual_install} is shown.
+
+\begin{lstlisting}[label=lst:jline_improved_clojure_script, caption=Clojure Start Script Modified to Use \texttt{jline}]
+#!/bin/sh
+CLASSPATH=$CLASSPATH:<PATH_TO_JLINE>/jline.jar:<PATH_TO_CLOJURE>/clojure-<VERSION>.jar java jline.ConsoleRunner clojure.main
+\end{lstlisting}
+
+

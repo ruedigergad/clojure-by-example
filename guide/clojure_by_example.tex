@@ -1,0 +1,105 @@
+\input{header}
+
+
+\title{
+  \changefont{pag}{m}{n}
+  \Huge Clojure by Example\\
+  \vspace{1cm}
+  \Large A Hands-on Introduction to Clojure
+  \vspace{3cm}
+}
+\author{
+  Author\\
+  Rüdiger Gad -- r.c.g@gmx.de\\
+  \vspace{3cm}
+}
+\date{Version 0.1.0 -- \today{}\\
+\vspace{3cm}
+{\footnotesize This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 Unported License (\url{http://creativecommons.org/licenses/by-sa/3.0/}).}
+}
+
+
+
+\begin{document}
+
+\begin{titlepage}
+  \maketitle
+  \thispagestyle{empty}
+\end{titlepage}
+
+
+
+\pagenumbering{roman}
+\tableofcontents  
+\newpage
+%\listoffigures
+%\lstlistoflistings
+%\listoftables
+
+
+%\input{preface}
+
+%\cleardoublepage
+
+%\input{nomenclature}
+
+%\cleardoublepage
+
+
+\pagenumbering{arabic}
+\addchap{About this Document}
+\input{introduction}
+\newpage
+
+
+
+\pagestyle{scrheadings}
+
+\part{Preparation}
+\input{get_clojure}
+\input{improve_repl}
+
+\part{Introduction}
+\input{first_repl_steps}
+\input{clojure_basics}
+
+\appendix
+
+\chapter{Changelog}
+
+\begin{table}[H]
+  \centering
+  \caption{Changelog}
+  \begin{tabular}{l l p{10cm}}
+    \toprule
+    \textbf{Date} & \textbf{Version} & \textbf{Remarks} \\
+    \toprule
+    2012-11-04 & 0.1.0 & Initial Version \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\addchap{References}
+The references are split in two parts.
+First, the ``classical'' literature is given.
+Afterwards, references to web sites are listed.
+
+\nocite{*}
+\begin{btSect}[alpha]{literature}
+  \section*{Literature}
+  \btPrintAll
+\end{btSect}
+
+\begin{btSect}[alpha]{internet}
+  \section*{Web Sites}
+  \btPrintAll
+\end{btSect}
+
+%\bibliographystyle{plain}
+%\bibliography{bibliography,rfc}
+
+\newpage
+\printindex
+
+\end{document}
+

@@ -1,0 +1,108 @@
+%\listfiles
+%%\pdfmapfile{=winfonts.map}
+\documentclass[10pt,a4paper,halfparskip+,DIV=12,BCOR=1.4cm]{scrreprt}
+\usepackage[english]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[english]{varioref}
+\usepackage[utf8]{inputenc}
+
+% Enable forward and inverse search
+\synctex=1
+
+% We do not use the stock fonts.
+\usepackage{avant}
+\usepackage{dejavu}
+%\renewcommand*\familydefault{\sfdefault}
+
+% Command for conveniently setting the font.
+\newcommand{\changefont}[3]{
+\fontfamily{#1} \fontseries{#2} \fontshape{#3} \selectfont}
+
+% Change font for chapter and section headings.
+\usepackage{titlesec}
+%\titleformat{\part}[hang]{\changefont{pag}{m}{n}\Huge}{\partformat\quad}{0pt}{}
+\titleformat{\chapter}[hang]{\changefont{pag}{m}{n}\Huge}{\thechapter\quad}{0pt}{}
+\titleformat{\section}[hang]{\changefont{pag}{m}{n}\Large}{\thesection\quad}{0pt}{}
+\titleformat{\subsection}[hang]{\changefont{pag}{m}{n}\large}{\thesubsection\quad}{0pt}{}
+\titleformat{\subsubsection}[hang]{\changefont{pag}{m}{n}\large}{\thesubsubsection\quad}{0pt}{}
+%\titleformat{\paragraph}[hang]{\changefont{pag}{m}{n}\large\bfseries}{\theparagraph\quad}{0pt}{}
+
+%%\usepackage{winfonts} 
+%%\fontfamily{verdana}\selectfont \renewcommand{\rmdefault}{verdana}
+% \renewcommand{\sfdefault}{verdana}%
+
+\usepackage{cancel}
+
+\usepackage[pdfborder={0 0 0}]{hyperref}
+\usepackage{url}
+\usepackage{listings}
+\usepackage[svgnames]{xcolor}
+\usepackage{graphicx}
+\usepackage{amssymb,amsmath}
+\usepackage{multirow}
+\usepackage{enumitem}
+
+\usepackage[intoc]{nomencl}
+
+%\usepackage{pstricks}
+%\usepackage{auto-pst-pdf}
+
+\usepackage{bibtopic}
+
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{dcolumn}
+\usepackage{tabulary}
+
+\usepackage{float} 
+\floatplacement{figure}{H}
+\floatplacement{table}{H}
+
+\usepackage{makeidx}
+\makeindex
+
+\usepackage{scrpage2}
+\pagestyle{scrheadings}
+
+% Trademarks etc.
+% http://www.danny4.de/archives/2006/02/15/latex-trademark-copyright-registered/
+\def\TReg{\textsuperscript{\textregistered}}
+\def\TCop{\textsuperscript{\textcopyright}}
+\def\TTra{\textsuperscript{\texttrademark}}
+
+% Take care of clubbing and widowing.
+\clubpenalty = 10000
+\widowpenalty = 10000
+\displaywidowpenalty = 10000
+
+%"specifies a column of entries to be centred on the : '.'"
+\newcolumntype{,}{D{,}{,}{-1}}
+
+%Nomenclature
+\setlength{\nomlabelwidth}{.20\hsize}
+\makenomenclature
+
+% Page design
+\clearscrheadfoot
+\ohead{\headmark}
+\automark[chapter]{chapter}
+\ofoot[\pagemark]{\pagemark}
+
+% Listing formatting 
+\lstset{
+	basicstyle =\color{black}\footnotesize\ttfamily,
+%	basicstyle=\color{DimGray}\small,
+%	keywordstyle=\color{DarkMagenta}\textbf,
+%	identifierstyle=\color{Black} ,
+%	commentstyle=\color{MediumAquamarine},
+%	stringstyle=\color{Blue},
+	breaklines=true,
+	backgroundcolor=\color[gray]{0.9},
+%	showstringspaces=false,
+	tabsize=2,
+  columns=fullflexible,
+}
+
+% Put index entry and write term in text as boldface.
+\newcommand{\bfix}[1]{\textbf{#1}\index{#1}}
+
